@@ -13,7 +13,7 @@ A daily profit tracker for small business owners — log sales and expenses in u
 | Next.js | 16 (Turbopack) |
 | React | 19 |
 | TypeScript | Strict mode |
-| Prisma | 7 + better-sqlite3 adapter |
+| Prisma | 7 (PostgreSQL) |
 | NextAuth | v5 beta |
 | Tailwind CSS | v4 |
 | shadcn/ui | v4 |
@@ -35,9 +35,10 @@ The `.env.local` file is included with defaults for local dev. Update `NEXTAUTH_
 
 ```bash
 # .env.local
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME?sslmode=require"
 NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-here"   # openssl rand -base64 32
+AUTH_SECRET="your-secret-here"       # openssl rand -base64 32
+NEXTAUTH_SECRET="your-secret-here"   # keep same value for compatibility
 # Optional AI summary provider (Smart Daily Summary)
 AI_PROVIDER="groq"                    # "groq" or "gemini"
 GROQ_API_KEY=""
@@ -49,7 +50,7 @@ GEMINI_MODEL="gemini-1.5-flash"
 ### 3. Run database migration
 
 ```bash
-npx prisma migrate dev --name init
+npx prisma db push
 ```
 
 ### 4. Start development server
