@@ -74,7 +74,7 @@ npx prisma generate        # Regenerate client after schema change
 
 ## Features
 
-- **Register / Login** — email + password auth with bcrypt hashing
+- **Register / Login** — mobile number + password auth with bcrypt hashing
 - **Log Sales** — quick number input with ₱ prefix, optional note
 - **Log Expenses** — label + amount with suggested label chips
 - **Today's Profit** — prominently displayed with pulsing green dot
