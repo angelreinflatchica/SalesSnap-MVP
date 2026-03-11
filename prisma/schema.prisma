@@ -9,3 +9,34 @@ generator client {
 datasource db {
   provider = "sqlite"
 }
+
+model User {
+  id           String       @id @default(cuid())
+  mobileNumber String       @unique
+  password     String
+  businessName String?
+  currency     String       @default("PHP")
+  createdAt    DateTime     @default(now())
+  sales        SalesEntry[]
+  expenses     Expense[]
+}
+
+model SalesEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  amount    Float
+  note      String?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  userId    String
+  label     String
+  amount    Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

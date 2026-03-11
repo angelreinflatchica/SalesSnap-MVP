@@ -1,0 +1,343 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { format, parseISO } from "date-fns";
+import { Pencil, Trash2 } from "lucide-react";
+import { formatPeso } from "@/lib/formatCurrency";
+import { calculateProfit } from "@/lib/profit";
+import type { SalesEntry, Expense } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExportButton } from "@/components/dashboard/ExportButton";
+import type { GroupedEntry } from "@/lib/export";
+import { useDashboardLanguage } from "@/components/layout/DashboardLanguageContext";
+import { getDashboardCopy } from "@/lib/dashboardCopy";
+import { sendOrQueue } from "@/lib/offlineSync";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+async function safeJson<T>(res: Response, fallback: T): Promise<T> {
+  try {
+    const text = await res.text();
+    if (!text) return fallback;
+    return JSON.parse(text) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+interface CachedSummaryRow {
+  date: string;
+  summary: string;
+  provider: string;
+}
+
+type HistoryEntry = GroupedEntry & {
+  smartSummary?: string;
+  summaryProvider?: string;
+};
+
+export default function HistoryPage() {
+  const { data: session } = useSession();
+  const [grouped, setGrouped] = useState<HistoryEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingSale, setEditingSale] = useState<SalesEntry | null>(null);
+  const [editAmount, setEditAmount] = useState<number>(0);
+  const [editNote, setEditNote] = useState<string>("");
+  const [editDate, setEditDate] = useState<string>("");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const { language } = useDashboardLanguage();
+  const copy = getDashboardCopy(language);
+
+  const fetchHistory = useCallback(async () => {
+    setLoading(true);
+    try {
+      const days = 30;
+      const results: HistoryEntry[] = [];
+
+      const summaryRes = await fetch(`/api/daily-summary/history?days=${days}&lang=${language}`);
+      const summaryData = await safeJson<{ summaries?: CachedSummaryRow[] }>(summaryRes, {});
+      const summaryMap = new Map<string, { summary: string; provider: string }>();
+      const rows: CachedSummaryRow[] = summaryData.summaries ?? [];
+      rows.forEach((row) => {
+        summaryMap.set(row.date, { summary: row.summary, provider: row.provider });
+      });
+
+      for (let i = 0; i < days; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = format(d, "yyyy-MM-dd");
+
+        const [salesRes, expensesRes] = await Promise.all([
+          fetch(`/api/sales?date=${dateStr}`),
+          fetch(`/api/expenses?date=${dateStr}`),
+        ]);
+        const [salesData, expensesData] = await Promise.all([
+          safeJson<{ sales?: SalesEntry[] }>(salesRes, {}),
+          safeJson<{ expenses?: Expense[] }>(expensesRes, {}),
+        ]);
+
+        const sales: SalesEntry[] = salesData.sales ?? [];
+        const expenses: Expense[] = expensesData.expenses ?? [];
+
+        if (sales.length > 0 || expenses.length > 0) {
+          const { totalSales, totalExpenses, profit } = calculateProfit(sales, expenses);
+          const savedSummary = summaryMap.get(dateStr);
+          results.push({
+            date: dateStr,
+            sales,
+            expenses,
+            totalSales,
+            totalExpenses,
+            profit,
+            smartSummary: savedSummary?.summary,
+            summaryProvider: savedSummary?.provider,
+          });
+        }
+      }
+
+      setGrouped(results);
+    } finally {
+      setLoading(false);
+    }
+  }, [language]);
+
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
+  function startEdit(sale: SalesEntry) {
+    setEditingSale(sale);
+    setEditAmount(sale.amount);
+    setEditNote(sale.note ?? "");
+    setEditDate(new Date(sale.date).toISOString().slice(0, 10));
+  }
+
+  async function saveEdit() {
+    if (!editingSale) return;
+    if (!Number.isFinite(editAmount) || editAmount <= 0) return;
+
+    setIsUpdating(true);
+    try {
+      const { queued, response } = await sendOrQueue(`/api/sales/${editingSale.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: editAmount, note: editNote, date: editDate }),
+      });
+
+      if (queued) {
+        setEditingSale(null);
+        await fetchHistory();
+        return;
+      }
+
+      if (!response?.ok) return;
+
+      setEditingSale(null);
+      await fetchHistory();
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
+  async function deleteSale(id: string) {
+    if (!window.confirm("Delete this sale?")) return;
+    const { queued, response } = await sendOrQueue(`/api/sales/${id}`, { method: "DELETE" });
+    if (!queued && !response?.ok) return;
+    await fetchHistory();
+  }
+
+  return (
+    <div className="w-full py-6 space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">{copy.history.title}</h1>
+          <p className="text-sm text-gray-500">{copy.history.subtitle}</p>
+        </div>
+        {!loading && grouped.length > 0 && (
+          <ExportButton
+            data={grouped}
+            businessName={session?.user?.name ?? "My Business"}
+          />
+        )}
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-600"></div>
+        </div>
+      ) : grouped.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+            <p className="text-gray-500">{copy.history.noEntries}</p>
+            <p className="text-sm text-gray-400 mt-1">
+              {copy.history.startLogging}
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {grouped.map(({ date, sales, expenses, totalSales, totalExpenses, profit, smartSummary, summaryProvider }) => (
+            <Card key={date}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-semibold text-gray-800">
+                    {format(parseISO(date), "EEEE, MMMM d, yyyy")}
+                  </CardTitle>
+                  <span
+                    className={`font-mono text-sm font-bold ${
+                      profit >= 0 ? "text-green-700" : "text-red-600"
+                    }`}
+                  >
+                    {formatPeso(profit)}
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="rounded-lg bg-green-50 px-3 py-2">
+                    <p className="text-xs text-gray-500">{copy.history.sales}</p>
+                    <p className="font-mono font-semibold text-green-700">
+                      {formatPeso(totalSales)}
+                    </p>
+                    <p className="text-xs text-gray-400">{sales.length} {copy.history.entries}</p>
+                  </div>
+                  <div className="rounded-lg bg-red-50 px-3 py-2">
+                    <p className="text-xs text-gray-500">{copy.history.expenses}</p>
+                    <p className="font-mono font-semibold text-red-600">
+                      {formatPeso(totalExpenses)}
+                    </p>
+                    <p className="text-xs text-gray-400">{expenses.length} {copy.history.entries}</p>
+                  </div>
+                </div>
+
+                {sales.length > 0 && (
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium uppercase tracking-wide text-gray-400">Sales</p>
+                    {sales.map((sale) => (
+                      <div
+                        key={sale.id}
+                        className="flex items-center justify-between rounded-lg border border-gray-100 bg-white px-3 py-2"
+                      >
+                        <div>
+                          <p className="text-xs font-semibold text-gray-700">{formatPeso(sale.amount)}</p>
+                          {sale.note && <p className="text-xs text-gray-500">{sale.note}</p>}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(sale)}
+                            className="flex h-7 w-7 items-center justify-center rounded-md text-gray-300 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                            aria-label="Edit sale"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteSale(sale.id)}
+                            className="flex h-7 w-7 items-center justify-center rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            aria-label="Delete sale"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {expenses.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {expenses.map((e) => (
+                      <span
+                        key={e.id}
+                        className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-600"
+                      >
+                        {e.label} · {formatPeso(e.amount)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {smartSummary && (
+                  <div className="rounded-lg border border-green-100 bg-green-50/60 px-3 py-2 dark:border-green-900/50 dark:bg-green-950/30">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-green-700 dark:text-green-300">
+                      {copy.history.savedSmartSummary}
+                    </p>
+                    <p className="mt-1 text-sm text-gray-700 dark:text-zinc-200">{smartSummary}</p>
+                    <p className="mt-1 text-[11px] text-gray-400 dark:text-zinc-500">
+                      {copy.common.source}: {summaryProvider === "fallback" ? copy.common.ruleBased : String(summaryProvider).toUpperCase()}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <Dialog open={!!editingSale} onOpenChange={(open) => !open && setEditingSale(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Sale</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="history-edit-sale-amount">Amount</Label>
+              <Input
+                id="history-edit-sale-amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={editAmount}
+                onChange={(e) => setEditAmount(Number(e.target.value))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="history-edit-sale-note">Note</Label>
+              <Input
+                id="history-edit-sale-note"
+                type="text"
+                value={editNote}
+                onChange={(e) => setEditNote(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="history-edit-sale-date">Date</Label>
+              <Input
+                id="history-edit-sale-date"
+                type="date"
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setEditingSale(null)}
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={saveEdit}
+              disabled={isUpdating}
+              className="rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
+            >
+              {isUpdating ? "Saving..." : "Save changes"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

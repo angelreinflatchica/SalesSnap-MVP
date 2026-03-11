@@ -1,0 +1,10 @@
+{
+  "name": "SalesSnap",
+  "short_name": "SalesSnap",
+  "description": "Track sales and expenses with offline support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "lang": "en"
+}
