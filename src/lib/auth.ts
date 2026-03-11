@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { normalizePhilippineMobile } from "@/lib/mobileNumber";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "credentials",
