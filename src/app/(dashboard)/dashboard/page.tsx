@@ -64,12 +64,12 @@ export default function DashboardPage() {
   return (
     <div className="w-full py-6 space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">{copy.dashboard.title}</h1>
-        <p className="text-sm text-gray-500">{copy.dashboard.subtitle}</p>
+        <h1 className="text-xl font-bold text-foreground">{copy.dashboard.title}</h1>
+        <p className="text-sm text-muted-foreground">{copy.dashboard.subtitle}</p>
       </div>
 
       <div className="flex items-center gap-2">
-        <label htmlFor="dashboard-date" className="text-sm font-medium text-gray-600">
+        <label htmlFor="dashboard-date" className="text-sm font-medium text-muted-foreground">
           {copy.dashboard.date}:
         </label>
         <input
@@ -78,7 +78,7 @@ export default function DashboardPage() {
           value={selectedDate}
           max={format(new Date(), "yyyy-MM-dd")}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+          className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 dark:focus:ring-green-900/40"
         />
       </div>
 
@@ -89,10 +89,10 @@ export default function DashboardPage() {
         </div>
         <SalesSummaryCard sales={sales} totalSales={totalSales} />
         <ExpenseSummaryCard expenses={expenses} totalExpenses={totalExpenses} />
-        <div className="flex items-center justify-center rounded-xl border border-gray-100 bg-white p-6">
+        <div className="flex items-center justify-center rounded-xl border border-border bg-card p-6">
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-500">{copy.dashboard.entriesOnSelectedDay}</p>
-            <p className="text-3xl font-bold text-gray-900 mt-1">
+            <p className="text-sm font-medium text-muted-foreground">{copy.dashboard.entriesOnSelectedDay}</p>
+            <p className="mt-1 text-3xl font-bold text-foreground">
               {sales.length + expenses.length}
             </p>
           </div>
@@ -130,21 +130,21 @@ export default function DashboardPage() {
                 return (
                   <div key={expense.id} className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-800">
+                      <p className="text-sm font-medium text-foreground">
                         {expense.label}
                       </p>
-                      <span className="text-xs font-semibold text-gray-600">
+                      <span className="text-xs font-semibold text-muted-foreground">
                         {formatPeso(expense.effectiveAmount)}
                         /day
                       </span>
                     </div>
-                    <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
                       <div
                         className={`h-full ${progressColor} transition-all duration-300`}
                         style={{ width: `${progressPercent}%` }}
                       />
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {expense.daysRemaining} day{expense.daysRemaining !== 1 ? "s" : ""}{" "}
                       remaining
                     </p>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold text-gray-800">
+            <CardTitle className="text-base font-semibold text-foreground">
               {copy.dashboard.logSaleCard}
             </CardTitle>
           </CardHeader>
@@ -175,7 +175,7 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold text-gray-800">
+            <CardTitle className="text-base font-semibold text-foreground">
               {copy.dashboard.addExpenseCard}
             </CardTitle>
           </CardHeader>

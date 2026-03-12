@@ -12,10 +12,13 @@ export function OfflineSyncProvider({ children }: { children: React.ReactNode })
     setIsOnline(navigator.onLine);
     getOfflineQueueSize().then(setQueueSize);
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {
-        // Service worker registration is best effort in dev.
-      });
+    if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js", { updateViaCache: "none" })
+        .then((registration) => registration.update())
+        .catch(() => {
+          // Service worker registration is best effort.
+        });
     }
 
     const onOnline = async () => {

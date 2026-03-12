@@ -72,13 +72,13 @@ export default function SettingsPage() {
   return (
     <div className="w-full py-6 space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">{copy.settings.title}</h1>
-        <p className="text-sm text-gray-500">{copy.settings.subtitle}</p>
+        <h1 className="text-xl font-bold text-foreground">{copy.settings.title}</h1>
+        <p className="text-sm text-muted-foreground">{copy.settings.subtitle}</p>
       </div>
 
       <Card className="max-w-lg">
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-800">
+          <CardTitle className="text-base font-semibold text-foreground">
             {copy.settings.businessInfo}
           </CardTitle>
         </CardHeader>
@@ -86,7 +86,7 @@ export default function SettingsPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
               <Label>{copy.common.mobileNumber}</Label>
-              <Input value={mobileNumber} disabled className="bg-gray-50" />
+              <Input value={mobileNumber} disabled className="bg-muted text-muted-foreground" />
             </div>
 
             <div className="space-y-1.5">
