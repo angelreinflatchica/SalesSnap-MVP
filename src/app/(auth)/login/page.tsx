@@ -24,6 +24,18 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
+function getSignInErrorMessage(error: string | undefined) {
+  if (!error || error === "CredentialsSignin") {
+    return "Invalid mobile number or password. If you fail too many times, please wait 15 minutes before trying again.";
+  }
+
+  if (error === "Configuration") {
+    return "Sign-in is temporarily unavailable. Please try again in a moment.";
+  }
+
+  return "Unable to sign in right now. Please try again.";
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -45,7 +57,7 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setServerError("Invalid mobile number or password. Please try again.");
+      setServerError(getSignInErrorMessage(result.error));
       return;
     }
     router.push("/dashboard");
