@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatPeso } from "@/lib/formatCurrency";
@@ -13,6 +13,13 @@ import { sendOrQueue } from "@/lib/offlineSync";
 import type { Expense } from "@/types";
 import { useDashboardLanguage } from "@/components/layout/DashboardLanguageContext";
 import { getDashboardCopy, interpolate } from "@/lib/dashboardCopy";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function createExpenseSchema(labelMessage: string, amountMessage: string) {
   return z.object({
@@ -32,6 +39,11 @@ interface AddExpenseFormProps {
 export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpenseFormProps) {
   const { language } = useDashboardLanguage();
   const copy = getDashboardCopy(language);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [editLabel, setEditLabel] = useState("");
+  const [editAmount, setEditAmount] = useState<number>(0);
+  const [editDate, setEditDate] = useState(selectedDate);
+  const [isUpdating, setIsUpdating] = useState(false);
   const expenseSchema = useMemo(
     () => createExpenseSchema(copy.forms.labelRequired, copy.forms.amountPositive),
     [copy.forms.labelRequired, copy.forms.amountPositive]
@@ -90,6 +102,59 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
       onSuccess();
     } catch {
       toast.error(copy.forms.expenseDeleteRetry);
+    }
+  }
+
+  function startEdit(expense: Expense) {
+    setEditingExpense(expense);
+    setEditLabel(expense.label);
+    setEditAmount(expense.amount);
+    setEditDate(new Date(expense.date).toISOString().slice(0, 10));
+  }
+
+  async function saveEdit() {
+    if (!editingExpense) return;
+    if (!editLabel.trim()) {
+      toast.error(copy.forms.labelRequired);
+      return;
+    }
+    if (!Number.isFinite(editAmount) || editAmount <= 0) {
+      toast.error(copy.forms.amountPositive);
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const { queued, response } = await sendOrQueue(`/api/expenses/${editingExpense.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          label: editLabel.trim(),
+          amount: editAmount,
+          date: editDate,
+        }),
+      });
+
+      if (queued) {
+        toast.success("Expense update queued for sync");
+        setEditingExpense(null);
+        onSuccess();
+        return;
+      }
+
+      if (!response?.ok) {
+        const data = response ? await response.json().catch(() => ({})) : {};
+        toast.error(data.error ?? "Failed to update expense");
+        return;
+      }
+
+      toast.success("Expense updated");
+      setEditingExpense(null);
+      onSuccess();
+    } catch {
+      toast.error("Failed to update expense");
+    } finally {
+      setIsUpdating(false);
     }
   }
 
@@ -177,18 +242,85 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
                     {formatPeso(expense.amount)}
                   </p>
                 </div>
-                <button
-                  onClick={() => deleteExpense(expense.id)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
-                  aria-label={interpolate(copy.forms.deleteExpense, { label: expense.label })}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => startEdit(expense)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                    aria-label="Edit expense"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteExpense(expense.id)}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    aria-label={interpolate(copy.forms.deleteExpense, { label: expense.label })}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
         </div>
       )}
+
+      <Dialog open={!!editingExpense} onOpenChange={(open) => !open && setEditingExpense(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Expense</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-expense-label">Label</Label>
+              <Input
+                id="edit-expense-label"
+                type="text"
+                value={editLabel}
+                onChange={(e) => setEditLabel(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-expense-amount">Amount</Label>
+              <Input
+                id="edit-expense-amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={editAmount}
+                onChange={(e) => setEditAmount(Number(e.target.value))}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-expense-date">Date</Label>
+              <Input
+                id="edit-expense-date"
+                type="date"
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              type="button"
+              onClick={() => setEditingExpense(null)}
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={saveEdit}
+              disabled={isUpdating}
+              className="rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
+            >
+              {isUpdating ? "Saving..." : "Save changes"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

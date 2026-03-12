@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { parseISO } from "date-fns";
 
 const patchSchema = z.object({
   label: z.string().min(1).max(50).optional(),
   amount: z.coerce.number().positive("Amount must be greater than 0").optional(),
+  date: z.string().optional(),
 });
 
 export async function PATCH(
@@ -34,9 +36,14 @@ export async function PATCH(
       );
     }
 
+    const data = {
+      ...parsed.data,
+      date: parsed.data.date ? parseISO(parsed.data.date) : undefined,
+    };
+
     const expense = await prisma.expense.update({
       where: { id },
-      data: parsed.data,
+      data,
     });
 
     return NextResponse.json({ expense });
