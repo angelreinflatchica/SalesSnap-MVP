@@ -14,6 +14,8 @@ export interface UpdateSaleInput {
   date?: string;
 }
 
+export type ExpenseType = "one-time" | "bulk";
+
 export interface Expense {
   id: string;
   userId: string;
@@ -21,6 +23,19 @@ export interface Expense {
   amount: number;
   date: string | Date;
   createdAt: string | Date;
+  expenseType: ExpenseType;
+  spreadDays: number;
+  dailyAmount: number | null;
+  spreadEndDate: string | Date | null;
+}
+
+export interface EffectiveExpense {
+  id: string;
+  label: string;
+  effectiveAmount: number;
+  expenseType: ExpenseType;
+  spreadDays: number;
+  daysRemaining?: number;
 }
 
 export interface User {

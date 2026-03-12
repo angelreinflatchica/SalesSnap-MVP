@@ -2,12 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { startOfDay, endOfDay, parseISO } from "date-fns";
+import { startOfDay, endOfDay, parseISO, addDays } from "date-fns";
+import {
+  computeDailyAmount,
+  computeSpreadEndDate,
+} from "@/lib/spreadExpense";
 
 const expenseSchema = z.object({
   label: z.string().min(1, "Label is required").max(50),
   amount: z.coerce.number().positive("Amount must be greater than 0"),
   date: z.string().optional(),
+  spreadDays: z.coerce
+    .number()
+    .int()
+    .min(1, "Must spread across at least 1 day")
+    .max(30, "Cannot spread across more than 30 days")
+    .optional()
+    .default(1),
 });
 
 export async function GET(req: NextRequest) {
@@ -51,14 +62,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { label, amount, date } = parsed.data;
+    const { label, amount, date, spreadDays } = parsed.data;
+    const expenseDate = date ? parseISO(date) : new Date();
+
+    let expenseType = "one-time";
+    let dailyAmount: number | null = null;
+    let spreadEndDate: Date | null = null;
+
+    if (spreadDays > 1) {
+      expenseType = "bulk";
+      dailyAmount = computeDailyAmount(amount, spreadDays);
+      spreadEndDate = computeSpreadEndDate(expenseDate, spreadDays);
+    }
 
     const expense = await prisma.expense.create({
       data: {
         userId: session.user.id,
         label,
         amount,
-        date: date ? parseISO(date) : new Date(),
+        date: expenseDate,
+        expenseType,
+        spreadDays,
+        dailyAmount,
+        spreadEndDate,
       },
     });
 
@@ -70,3 +96,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

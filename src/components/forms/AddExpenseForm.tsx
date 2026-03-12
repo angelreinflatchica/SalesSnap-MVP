@@ -20,6 +20,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { computeDailyAmount, computeSpreadEndDate } from "@/lib/spreadExpense";
+import { format } from "date-fns";
 
 function createExpenseSchema(labelMessage: string, amountMessage: string) {
   return z.object({
@@ -36,6 +38,8 @@ interface AddExpenseFormProps {
   selectedDate: string;
 }
 
+const SPREAD_OPTIONS = [1, 3, 7, 14, 30];
+
 export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpenseFormProps) {
   const { language } = useDashboardLanguage();
   const copy = getDashboardCopy(language);
@@ -44,6 +48,9 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
   const [editAmount, setEditAmount] = useState<number>(0);
   const [editDate, setEditDate] = useState(selectedDate);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [spreadDays, setSpreadDays] = useState(1);
+  const [formAmount, setFormAmount] = useState<number>(0);
+  
   const expenseSchema = useMemo(
     () => createExpenseSchema(copy.forms.labelRequired, copy.forms.amountPositive),
     [copy.forms.labelRequired, copy.forms.amountPositive]
@@ -54,14 +61,24 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
     handleSubmit,
     setValue,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
   });
 
+  const amount = watch("amount");
+  
+  const dailyAmount = spreadDays > 1 ? computeDailyAmount(amount || 0, spreadDays) : null;
+  const spreadEndDate = spreadDays > 1 ? computeSpreadEndDate(new Date(selectedDate), spreadDays) : null;
+
   async function onSubmit(values: ExpenseFormValues) {
     try {
-      const payload = { ...values, date: selectedDate };
+      const payload = { 
+        ...values, 
+        date: selectedDate,
+        spreadDays,
+      };
       const { queued, response } = await sendOrQueue("/api/expenses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -70,6 +87,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
       if (queued) {
         toast.success("Expense saved offline and queued for sync");
         reset();
+        setSpreadDays(1);
         onSuccess();
         return;
       }
@@ -78,8 +96,20 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
         toast.error(data.error ?? copy.forms.expenseAddFailed);
         return;
       }
-      toast.success(copy.forms.expenseAdded);
+      
+      if (spreadDays > 1) {
+        toast.success(
+          interpolate("₱{amount} spread over {days} days — ₱{daily}/day", {
+            amount: formatPeso(values.amount).slice(1), // Remove ₱ prefix
+            days: spreadDays.toString(),
+            daily: (dailyAmount || 0).toFixed(2),
+          })
+        );
+      } else {
+        toast.success(copy.forms.expenseAdded);
+      }
       reset();
+      setSpreadDays(1);
       onSuccess();
     } catch {
       toast.error(copy.forms.expenseAddRetry);
@@ -210,6 +240,35 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
           </div>
         </div>
 
+        <div className="space-y-2">
+          <Label className="text-xs font-medium text-gray-600">How many days will this last?</Label>
+          <div className="flex flex-wrap gap-2">
+            {SPREAD_OPTIONS.map((days) => (
+              <button
+                key={days}
+                type="button"
+                onClick={() => setSpreadDays(days)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  spreadDays === days
+                    ? "bg-emerald-500 text-white"
+                    : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                }`}
+              >
+                {days === 1 ? "1 day" : `${days} days`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {spreadDays > 1 && dailyAmount !== null && spreadEndDate && (
+          <div className="rounded-xl bg-blue-50 border border-blue-200 p-3">
+            <p className="text-xs text-blue-900">
+              <span className="font-semibold">Daily cost:</span> {formatPeso(dailyAmount)} • 
+              <span className="font-semibold ml-2">Covers until:</span> {format(spreadEndDate, "EEEE, MMMM d")}
+            </p>
+          </div>
+        )}
+
         <button
           type="submit"
           disabled={isSubmitting}
@@ -324,3 +383,4 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
     </div>
   );
 }
+

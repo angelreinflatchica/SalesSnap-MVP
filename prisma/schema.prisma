@@ -32,11 +32,15 @@ model SalesEntry {
 }
 
 model Expense {
-  id        String   @id @default(cuid())
-  userId    String
-  label     String
-  amount    Float
-  date      DateTime @default(now())
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String   @id @default(cuid())
+  userId        String
+  label         String
+  amount        Float
+  date          DateTime @default(now())
+  createdAt     DateTime @default(now())
+  expenseType   String   @default("one-time")
+  spreadDays    Int      @default(1)
+  dailyAmount   Float?
+  spreadEndDate DateTime?
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

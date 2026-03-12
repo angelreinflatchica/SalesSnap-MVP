@@ -14,6 +14,8 @@ import type { SalesEntry, Expense, DayChartData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardLanguage } from "@/components/layout/DashboardLanguageContext";
 import { getDashboardCopy } from "@/lib/dashboardCopy";
+import { resolveEffectiveExpenses } from "@/lib/spreadExpense";
+import { formatPeso } from "@/lib/formatCurrency";
 
 async function safeJson<T>(res: Response, fallback: T): Promise<T> {
   try {
@@ -55,6 +57,10 @@ export default function DashboardPage() {
   const { language } = useDashboardLanguage();
   const copy = getDashboardCopy(language);
 
+  // Get active bulk expenses for selected date
+  const effectiveExpenses = resolveEffectiveExpenses(expenses, new Date(selectedDate));
+  const activeBulkExpenses = effectiveExpenses.filter((exp) => exp.spreadDays > 1);
+
   return (
     <div className="w-full py-6 space-y-5">
       <div>
@@ -93,8 +99,62 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Entry forms */}
+      {/* Smart summary */}
       <SmartSummaryCard selectedDate={selectedDate} />
+
+      {/* Active bulk purchases section */}
+      {activeBulkExpenses.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-gray-800">
+              Active Bulk Purchases
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {activeBulkExpenses.map((expense) => {
+                const progressPercent =
+                  expense.daysRemaining && expense.spreadDays
+                    ? Math.round(
+                        ((expense.spreadDays - (expense.daysRemaining || 0)) /
+                          expense.spreadDays) *
+                          100
+                      )
+                    : 0;
+
+                const progressColor =
+                  expense.daysRemaining && expense.daysRemaining > 1
+                    ? "bg-green-500"
+                    : "bg-amber-500";
+
+                return (
+                  <div key={expense.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-800">
+                        {expense.label}
+                      </p>
+                      <span className="text-xs font-semibold text-gray-600">
+                        {formatPeso(expense.effectiveAmount)}
+                        /day
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
+                      <div
+                        className={`h-full ${progressColor} transition-all duration-300`}
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      {expense.daysRemaining} day{expense.daysRemaining !== 1 ? "s" : ""}{" "}
+                      remaining
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Entry forms */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
