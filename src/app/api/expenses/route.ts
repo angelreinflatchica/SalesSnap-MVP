@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { startOfDay, endOfDay, parseISO, addDays } from "date-fns";
+import { startOfDay, endOfDay, parseISO, isValid } from "date-fns";
 import {
   computeDailyAmount,
   computeSpreadEndDate,
@@ -20,6 +20,31 @@ const expenseSchema = z.object({
     .optional()
     .default(1),
 });
+
+let spreadColumnsEnsured = false;
+
+async function ensureSpreadColumns() {
+  if (spreadColumnsEnsured) return;
+
+  // Safe self-heal for environments where migrations were not applied yet.
+  await prisma.$executeRawUnsafe(`
+    ALTER TABLE "Expense"
+    ADD COLUMN IF NOT EXISTS "expenseType" TEXT DEFAULT 'one-time',
+    ADD COLUMN IF NOT EXISTS "spreadDays" INTEGER DEFAULT 1,
+    ADD COLUMN IF NOT EXISTS "dailyAmount" DOUBLE PRECISION,
+    ADD COLUMN IF NOT EXISTS "spreadEndDate" TIMESTAMP(3)
+  `);
+
+  await prisma.$executeRawUnsafe(`
+    UPDATE "Expense"
+    SET
+      "expenseType" = COALESCE("expenseType", 'one-time'),
+      "spreadDays" = COALESCE("spreadDays", 1)
+    WHERE "expenseType" IS NULL OR "spreadDays" IS NULL
+  `);
+
+  spreadColumnsEnsured = true;
+}
 
 export async function GET(req: NextRequest) {
   const session = await auth();
@@ -52,6 +77,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    await ensureSpreadColumns();
+
     const body = await req.json();
     const parsed = expenseSchema.safeParse(body);
 
@@ -64,6 +91,9 @@ export async function POST(req: NextRequest) {
 
     const { label, amount, date, spreadDays } = parsed.data;
     const expenseDate = date ? parseISO(date) : new Date();
+    if (!isValid(expenseDate)) {
+      return NextResponse.json({ error: "Invalid date" }, { status: 400 });
+    }
 
     let expenseType = "one-time";
     let dailyAmount: number | null = null;
@@ -89,7 +119,8 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ expense }, { status: 201 });
-  } catch {
+  } catch (error) {
+    console.error("[POST /api/expenses] Failed to create expense", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
