@@ -21,16 +21,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
         if (!normalizedMobile) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { mobileNumber: normalizedMobile },
-        });
-        if (!user) return null;
-        const valid = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
-        if (!valid) return null;
-        return { id: user.id, email: user.mobileNumber, name: user.businessName };
+        try {
+          const user = await prisma.user.findUnique({
+            where: { mobileNumber: normalizedMobile },
+          });
+          if (!user) return null;
+
+          const valid = await bcrypt.compare(
+            credentials.password as string,
+            user.password
+          );
+          if (!valid) return null;
+
+          return {
+            id: user.id,
+            email: user.mobileNumber,
+            name: user.businessName,
+          };
+        } catch (error) {
+          console.error("Credentials authorize failed:", error);
+          return null;
+        }
       },
     }),
   ],
