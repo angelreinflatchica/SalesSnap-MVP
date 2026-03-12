@@ -2,10 +2,55 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { compare, hash } from "bcryptjs";
 
 const settingsSchema = z.object({
   businessName: z.string().max(100).optional(),
   currency: z.string().length(3).optional(),
+  currentPassword: z.string().min(8).optional(),
+  newPassword: z.string().min(8).optional(),
+  confirmPassword: z.string().min(8).optional(),
+}).superRefine((data, ctx) => {
+  const hasAnyPasswordField =
+    !!data.currentPassword || !!data.newPassword || !!data.confirmPassword;
+
+  if (!hasAnyPasswordField) return;
+
+  if (!data.currentPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Current password is required",
+      path: ["currentPassword"],
+    });
+  }
+
+  if (!data.newPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "New password is required",
+      path: ["newPassword"],
+    });
+  }
+
+  if (!data.confirmPassword) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Please confirm your new password",
+      path: ["confirmPassword"],
+    });
+  }
+
+  if (
+    data.newPassword &&
+    data.confirmPassword &&
+    data.newPassword !== data.confirmPassword
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "New password and confirmation do not match",
+      path: ["confirmPassword"],
+    });
+  }
 });
 
 export async function GET() {
@@ -50,9 +95,55 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    const {
+      currentPassword,
+      newPassword,
+      confirmPassword,
+      ...profileFields
+    } = parsed.data;
+
+    const updateData: { businessName?: string; currency?: string; password?: string } = {
+      ...profileFields,
+    };
+
+    const wantsPasswordChange =
+      !!currentPassword || !!newPassword || !!confirmPassword;
+
+    if (wantsPasswordChange) {
+      const existingUser = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { password: true },
+      });
+
+      if (!existingUser) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      const isCurrentPasswordValid = await compare(
+        currentPassword as string,
+        existingUser.password
+      );
+
+      if (!isCurrentPasswordValid) {
+        return NextResponse.json(
+          { error: "Current password is incorrect" },
+          { status: 400 }
+        );
+      }
+
+      updateData.password = await hash(newPassword as string, 12);
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json(
+        { error: "No changes provided" },
+        { status: 400 }
+      );
+    }
+
     const user = await prisma.user.update({
       where: { id: session.user.id },
-      data: parsed.data,
+      data: updateData,
       select: { id: true, mobileNumber: true, businessName: true, currency: true },
     });
 

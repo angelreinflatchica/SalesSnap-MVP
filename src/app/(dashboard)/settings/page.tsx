@@ -18,7 +18,21 @@ function createSettingsSchema() {
   });
 }
 
+function createPasswordSchema() {
+  return z
+    .object({
+      currentPassword: z.string().min(8, "Current password is required"),
+      newPassword: z.string().min(8, "New password must be at least 8 characters"),
+      confirmPassword: z.string().min(8, "Please confirm your new password"),
+    })
+    .refine((values) => values.newPassword === values.confirmPassword, {
+      message: "New password and confirmation do not match",
+      path: ["confirmPassword"],
+    });
+}
+
 type SettingsFormValues = z.infer<ReturnType<typeof createSettingsSchema>>;
+type PasswordFormValues = z.infer<ReturnType<typeof createPasswordSchema>>;
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -26,6 +40,7 @@ export default function SettingsPage() {
   const { language } = useDashboardLanguage();
   const copy = getDashboardCopy(language);
   const settingsSchema = useMemo(() => createSettingsSchema(), []);
+  const passwordSchema = useMemo(() => createPasswordSchema(), []);
 
   const {
     register,
@@ -34,6 +49,15 @@ export default function SettingsPage() {
     formState: { errors, isSubmitting },
   } = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
+  });
+
+  const {
+    register: registerPassword,
+    handleSubmit: handleSubmitPassword,
+    reset: resetPassword,
+    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+  } = useForm<PasswordFormValues>({
+    resolver: zodResolver(passwordSchema),
   });
 
   useEffect(() => {
@@ -59,6 +83,23 @@ export default function SettingsPage() {
     } else {
       toast.error(copy.settings.saveFailed);
     }
+  }
+
+  async function onPasswordSubmit(values: PasswordFormValues) {
+    const res = await fetch("/api/settings", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    if (res.ok) {
+      toast.success("Password updated successfully");
+      resetPassword();
+      return;
+    }
+
+    const data = await res.json().catch(() => ({}));
+    toast.error(data.error ?? "Failed to update password");
   }
 
   if (loading) {
@@ -113,6 +154,74 @@ export default function SettingsPage() {
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 copy.common.saveChanges
+              )}
+            </button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-lg">
+        <CardHeader>
+          <CardTitle className="text-base font-semibold text-foreground">
+            Change Password
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmitPassword(onPasswordSubmit)} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="currentPassword">Current Password</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                autoComplete="current-password"
+                {...registerPassword("currentPassword")}
+              />
+              {passwordErrors.currentPassword && (
+                <p className="text-xs text-red-600">
+                  {passwordErrors.currentPassword.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                autoComplete="new-password"
+                {...registerPassword("newPassword")}
+              />
+              {passwordErrors.newPassword && (
+                <p className="text-xs text-red-600">
+                  {passwordErrors.newPassword.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                {...registerPassword("confirmPassword")}
+              />
+              {passwordErrors.confirmPassword && (
+                <p className="text-xs text-red-600">
+                  {passwordErrors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isPasswordSubmitting}
+              className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            >
+              {isPasswordSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Update Password"
               )}
             </button>
           </form>
