@@ -14,6 +14,10 @@ type RequestResponse = {
   error?: string;
   devOtp?: string;
   retryAfterSeconds?: number;
+  devDebug?: {
+    smsDelivery: "sent" | "not_delivered";
+    reason?: string;
+  };
 };
 
 type ResetResponse = {
@@ -44,6 +48,7 @@ export default function ForgotPasswordPage() {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [otpRequested, setOtpRequested] = useState(false);
   const [devOtp, setDevOtp] = useState<string | null>(null);
+  const [devDiagnostic, setDevDiagnostic] = useState<string | null>(null);
   const [resendCooldown, setResendCooldown] = useState(0);
 
   useEffect(() => {
@@ -68,6 +73,7 @@ export default function ForgotPasswordPage() {
     setResetError(null);
     setSuccessMessage(null);
     setDevOtp(null);
+    setDevDiagnostic(null);
 
     if (!isValidPhilippineMobile(mobileNumber)) {
       setRequestError("Enter a valid Philippine mobile number");
@@ -113,6 +119,14 @@ export default function ForgotPasswordPage() {
       setSuccessMessage(data?.message ?? "OTP sent");
       setDevOtp(data?.devOtp ?? null);
       setResendCooldown(data?.retryAfterSeconds ?? 30);
+
+      if (data?.devDebug?.smsDelivery === "not_delivered") {
+        if (data.devDebug.reason === "sms_not_configured") {
+          setDevDiagnostic("SMS provider is not configured. Add SEMAPHORE_API_KEY in .env.local and restart the server.");
+        } else {
+          setDevDiagnostic(`SMS delivery failed (${data.devDebug.reason ?? "unknown reason"}).`);
+        }
+      }
     } catch {
       setRequestError("Unable to request OTP right now. Please check your connection and try again.");
     } finally {
@@ -249,6 +263,12 @@ export default function ForgotPasswordPage() {
             {devOtp && (
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                 <p className="text-sm text-amber-700">Development OTP: {devOtp}</p>
+              </div>
+            )}
+
+            {devDiagnostic && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                <p className="text-sm text-amber-700">{devDiagnostic}</p>
               </div>
             )}
 

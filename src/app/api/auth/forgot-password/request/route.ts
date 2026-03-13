@@ -19,6 +19,11 @@ const requestSchema = z.object({
 const SUCCESS_MESSAGE =
   "If your mobile number is registered, we sent a reset code.";
 
+type DevDebugInfo = {
+  smsDelivery: "sent" | "not_delivered";
+  reason?: string;
+};
+
 type RequestRateState = {
   count: number;
   windowStartedAt: number;
@@ -125,6 +130,7 @@ function applyRequestRateLimit(key: string) {
 
 export async function POST(req: NextRequest) {
   const ipAddress = getClientIp(req);
+  const isDev = process.env.NODE_ENV !== "production";
 
   try {
     const body = await req.json();
@@ -177,6 +183,7 @@ export async function POST(req: NextRequest) {
     });
 
     let devOtp: string | undefined;
+    let devDebug: DevDebugInfo | undefined;
 
     if (user) {
       const otp = generatePasswordResetOtp();
@@ -204,8 +211,15 @@ export async function POST(req: NextRequest) {
         otp,
       });
 
-      if (!smsResult.delivered && process.env.NODE_ENV !== "production") {
+      if (!smsResult.delivered && isDev) {
         devOtp = otp;
+      }
+
+      if (isDev) {
+        devDebug = {
+          smsDelivery: smsResult.delivered ? "sent" : "not_delivered",
+          ...(smsResult.reason ? { reason: smsResult.reason } : {}),
+        };
       }
 
       await createOtpRequestLog({
@@ -216,6 +230,10 @@ export async function POST(req: NextRequest) {
       });
 
       if (!smsResult.delivered) {
+        if (smsResult.reason === "sms_not_configured") {
+          console.error("OTP SMS not sent: SEMAPHORE_API_KEY is not configured.");
+        }
+
         console.warn("Password reset OTP SMS not delivered", {
           reason: smsResult.reason,
           userId: user.id,
@@ -234,6 +252,7 @@ export async function POST(req: NextRequest) {
         message: SUCCESS_MESSAGE,
         retryAfterSeconds: PASSWORD_RESET_RESEND_COOLDOWN_SECONDS,
         ...(devOtp ? { devOtp } : {}),
+        ...(devDebug ? { devDebug } : {}),
       },
       { status: 200 }
     );
