@@ -45,9 +45,6 @@ GROQ_API_KEY=""
 GROQ_MODEL="llama-3.1-8b-instant"
 GEMINI_API_KEY=""
 GEMINI_MODEL="gemini-1.5-flash"
-# Optional SMS OTP provider (Forgot Password)
-SEMAPHORE_API_KEY=""
-SEMAPHORE_SENDER_NAME=""
 ```
 
 ### 3. Run database migration
