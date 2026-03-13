@@ -72,16 +72,12 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(request, clone));
           return response;
         })
-        .catch(async () => {
-          const cached = await caches.match(request);
-          if (cached) return cached;
-          return new Response("{}", {
+        .catch(() => {
+          return new Response(JSON.stringify({ error: "OFFLINE" }), {
             headers: { "Content-Type": "application/json" },
-            status: 200,
+            status: 503,
           });
         })
     );

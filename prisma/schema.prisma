@@ -16,9 +16,40 @@ model User {
   password     String
   businessName String?
   currency     String       @default("PHP")
+  passwordResetFailureCount Int @default(0)
+  passwordResetLockedUntil  DateTime?
   createdAt    DateTime     @default(now())
   sales        SalesEntry[]
   expenses     Expense[]
+  passwordResetOtps PasswordResetOtp[]
+  passwordResetRequestLogs PasswordResetRequestLog[]
+}
+
+model PasswordResetOtp {
+  id         String   @id @default(cuid())
+  userId     String
+  codeHash   String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+}
+
+model PasswordResetRequestLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  mobileNumber String
+  ipAddress    String
+  status       String
+  createdAt    DateTime @default(now())
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([mobileNumber, createdAt])
+  @@index([userId, createdAt])
 }
 
 model SalesEntry {

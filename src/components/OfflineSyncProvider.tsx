@@ -4,13 +4,66 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { flushOfflineQueue, getOfflineQueueSize } from "@/lib/offlineSync";
 
+const CONNECTIVITY_CHECK_TIMEOUT_MS = 5000;
+
+async function checkConnectivity() {
+  if (typeof window === "undefined") return true;
+
+  try {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CONNECTIVITY_CHECK_TIMEOUT_MS);
+
+    const res = await fetch(`/api/auth/session?ts=${Date.now()}`, {
+      method: "GET",
+      cache: "no-store",
+      signal: controller.signal,
+    });
+
+    window.clearTimeout(timeout);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 export function OfflineSyncProvider({ children }: { children: React.ReactNode }) {
   const [isOnline, setIsOnline] = useState(true);
   const [queueSize, setQueueSize] = useState(0);
 
   useEffect(() => {
-    setIsOnline(navigator.onLine);
-    getOfflineQueueSize().then(setQueueSize);
+    let offlineDebounceTimer: number | null = null;
+    let isDisposed = false;
+
+    const refreshConnectivity = async (showOfflineToast: boolean) => {
+      const online = await checkConnectivity();
+      if (isDisposed) return;
+
+      setIsOnline(online);
+      if (!online) {
+        getOfflineQueueSize().then((size) => {
+          if (!isDisposed) setQueueSize(size);
+        });
+        if (showOfflineToast) {
+          toast.info("You are offline. Changes will sync when internet returns.");
+        }
+        return;
+      }
+
+      const result = await flushOfflineQueue();
+      if (isDisposed) return;
+      setQueueSize(result.remaining);
+      if (result.synced > 0) {
+        toast.success(`Synced ${result.synced} offline change${result.synced === 1 ? "" : "s"}`);
+      }
+      if (result.dropped > 0) {
+        toast.warning(`${result.dropped} offline change${result.dropped === 1 ? " was" : "s were"} dropped due to conflict or max retries.`);
+      }
+    };
+
+    refreshConnectivity(false);
+    getOfflineQueueSize().then((size) => {
+      if (!isDisposed) setQueueSize(size);
+    });
 
     if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
       navigator.serviceWorker
@@ -22,33 +75,32 @@ export function OfflineSyncProvider({ children }: { children: React.ReactNode })
     }
 
     const onOnline = async () => {
-      setIsOnline(true);
-      const result = await flushOfflineQueue();
-      setQueueSize(result.remaining);
-      if (result.synced > 0) {
-        toast.success(`Synced ${result.synced} offline change${result.synced === 1 ? "" : "s"}`);
-      }
-      if (result.dropped > 0) {
-        toast.warning(`${result.dropped} offline change${result.dropped === 1 ? " was" : "s were"} dropped due to conflict or max retries.`);
-      }
+      await refreshConnectivity(false);
     };
 
     const onOffline = () => {
-      setIsOnline(false);
-      getOfflineQueueSize().then(setQueueSize);
-      toast.info("You are offline. Changes will sync when internet returns.");
+      if (offlineDebounceTimer) {
+        window.clearTimeout(offlineDebounceTimer);
+      }
+
+      // Some browsers fire transient offline events; verify via network call first.
+      offlineDebounceTimer = window.setTimeout(() => {
+        refreshConnectivity(true);
+      }, 1200);
     };
 
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
 
     const interval = window.setInterval(async () => {
-      if (!navigator.onLine) return;
-      const result = await flushOfflineQueue();
-      setQueueSize(result.remaining);
+      await refreshConnectivity(false);
     }, 30000);
 
     return () => {
+      isDisposed = true;
+      if (offlineDebounceTimer) {
+        window.clearTimeout(offlineDebounceTimer);
+      }
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
       window.clearInterval(interval);
