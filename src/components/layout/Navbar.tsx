@@ -29,8 +29,8 @@ export function Navbar({ businessName, mobileNumber }: NavbarProps) {
       <div className="flex items-center gap-3">
         <DashboardLanguageToggle compact />
         <ThemeToggle compact />
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
-          <User className="h-4 w-4 text-green-700" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/40">
+          <User className="h-4 w-4 text-green-700 dark:text-green-400" />
         </div>
         <div className="hidden sm:block">
           <p className="text-sm font-medium text-gray-900 leading-none dark:text-zinc-100">

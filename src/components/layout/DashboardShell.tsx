@@ -33,12 +33,12 @@ function DashboardShellContent({ children, businessName, mobileNumber }: Dashboa
   const copy = getDashboardCopy(language);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-zinc-950">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-zinc-950">
       <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((v) => !v)} />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <Navbar businessName={businessName} mobileNumber={mobileNumber} />
-        <main className="flex-1 pb-20 lg:pb-8">
+        <main className="flex-1 overflow-y-auto pb-20 lg:pb-8">
           <div className="w-full px-4 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>

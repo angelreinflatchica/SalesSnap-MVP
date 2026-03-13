@@ -139,7 +139,7 @@ export default function SettingsPage() {
                 {...register("businessName")}
               />
               {errors.businessName && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-red-600 dark:text-red-400">
                   {errors.businessName.message}
                 </p>
               )}
@@ -177,7 +177,7 @@ export default function SettingsPage() {
                 {...registerPassword("currentPassword")}
               />
               {passwordErrors.currentPassword && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-red-600 dark:text-red-400">
                   {passwordErrors.currentPassword.message}
                 </p>
               )}
@@ -192,7 +192,7 @@ export default function SettingsPage() {
                 {...registerPassword("newPassword")}
               />
               {passwordErrors.newPassword && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-red-600 dark:text-red-400">
                   {passwordErrors.newPassword.message}
                 </p>
               )}
@@ -207,7 +207,7 @@ export default function SettingsPage() {
                 {...registerPassword("confirmPassword")}
               />
               {passwordErrors.confirmPassword && (
-                <p className="text-xs text-red-600">
+                <p className="text-xs text-red-600 dark:text-red-400">
                   {passwordErrors.confirmPassword.message}
                 </p>
               )}

@@ -40,7 +40,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden shrink-0 flex-col border-r px-3 py-6 transition-[width] duration-200 lg:flex",
+        "hidden h-screen shrink-0 flex-col border-r px-3 py-6 transition-[width] duration-200 lg:flex",
         "border-gray-100 bg-white dark:border-zinc-800 dark:bg-zinc-900",
         collapsed ? "w-20" : "w-60"
       )}

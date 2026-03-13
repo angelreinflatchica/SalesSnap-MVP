@@ -84,8 +84,8 @@ export default function RegisterPage() {
           <CardContent className="p-6">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               {serverError && (
-                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3">
-                  <p className="text-sm text-red-700">{serverError}</p>
+                <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800 dark:bg-red-950/40">
+                  <p className="text-sm text-red-700 dark:text-red-300">{serverError}</p>
                 </div>
               )}
 
@@ -99,7 +99,7 @@ export default function RegisterPage() {
                   {...register("mobileNumber")}
                 />
                 {errors.mobileNumber && (
-                  <p className="text-xs text-red-600">{errors.mobileNumber.message}</p>
+                  <p className="text-xs text-red-600 dark:text-red-400">{errors.mobileNumber.message}</p>
                 )}
               </div>
 
@@ -113,7 +113,7 @@ export default function RegisterPage() {
                   {...register("password")}
                 />
                 {errors.password && (
-                  <p className="text-xs text-red-600">
+                  <p className="text-xs text-red-600 dark:text-red-400">
                     {errors.password.message}
                   </p>
                 )}

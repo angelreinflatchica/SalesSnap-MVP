@@ -106,7 +106,7 @@ export default function DashboardPage() {
       {activeBulkExpenses.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold text-gray-800">
+            <CardTitle className="text-base font-semibold text-gray-800 dark:text-zinc-200">
               Active Bulk Purchases
             </CardTitle>
           </CardHeader>

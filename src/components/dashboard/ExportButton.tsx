@@ -88,11 +88,11 @@ export function ExportButton({ data, businessName }: ExportButtonProps) {
       <div className="relative">
         <button
           onClick={() => setOpen((v) => !v)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
         >
-          <FileDown className="h-4 w-4 text-gray-500" />
+          <FileDown className="h-4 w-4 text-gray-500 dark:text-zinc-400" />
           {periods.find((p) => p.value === period)?.label}
-          <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+          <ChevronDown className="h-3.5 w-3.5 text-gray-400 dark:text-zinc-500" />
         </button>
 
         {open && (
@@ -101,7 +101,7 @@ export function ExportButton({ data, businessName }: ExportButtonProps) {
               className="fixed inset-0 z-10"
               onClick={() => setOpen(false)}
             />
-            <div className="absolute left-0 top-full z-20 mt-1 w-52 rounded-lg border border-gray-200 bg-white shadow-lg">
+            <div className="absolute left-0 top-full z-20 mt-1 w-52 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
               {periods.map((p) => (
                 <button
                   key={p.value}
@@ -109,10 +109,10 @@ export function ExportButton({ data, businessName }: ExportButtonProps) {
                     setPeriod(p.value);
                     setOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-sm transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-gray-50 ${
+                  className={`w-full px-4 py-2 text-left text-sm transition-colors first:rounded-t-lg last:rounded-b-lg hover:bg-gray-50 dark:hover:bg-zinc-700 ${
                     period === p.value
-                      ? "bg-green-50 font-medium text-green-700"
-                      : "text-gray-700"
+                      ? "bg-green-50 font-medium text-green-700 dark:bg-green-950/40 dark:text-green-300"
+                      : "text-gray-700 dark:text-zinc-300"
                   }`}
                 >
                   {p.label}
@@ -127,7 +127,7 @@ export function ExportButton({ data, businessName }: ExportButtonProps) {
       <button
         onClick={() => handleExport("excel")}
         disabled={loading !== null}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 shadow-sm hover:bg-emerald-100 disabled:opacity-50 transition-colors"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 shadow-sm hover:bg-emerald-100 disabled:opacity-50 transition-colors dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/70"
       >
         <FileSpreadsheet className="h-4 w-4" />
         {loading === "excel" ? copy.export.exporting : "Excel"}
@@ -137,7 +137,7 @@ export function ExportButton({ data, businessName }: ExportButtonProps) {
       <button
         onClick={() => handleExport("pdf")}
         disabled={loading !== null}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-100 disabled:opacity-50 transition-colors"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-100 disabled:opacity-50 transition-colors dark:border-red-800 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-950/70"
       >
         <FileText className="h-4 w-4" />
         {loading === "pdf" ? copy.export.exporting : "PDF"}

@@ -15,6 +15,7 @@ import type { DayChartData } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDashboardLanguage } from "@/components/layout/DashboardLanguageContext";
 import { getDashboardCopy, interpolate } from "@/lib/dashboardCopy";
+import { useTheme } from "next-themes";
 
 interface WeeklyChartProps {
   data: DayChartData[];
@@ -24,11 +25,29 @@ interface WeeklyChartProps {
 export function WeeklyChart({ data, selectedDate }: WeeklyChartProps) {
   const { language } = useDashboardLanguage();
   const copy = getDashboardCopy(language);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
+  const gridColor = isDark ? "#3F3F46" : "#F3F4F6";
+  const axisColor = isDark ? "#71717A" : "#9CA3AF";
+  const tooltipStyle = isDark
+    ? {
+        borderRadius: "12px",
+        border: "1px solid #3F3F46",
+        backgroundColor: "#18181B",
+        color: "#E4E4E7",
+        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.4)",
+      }
+    : {
+        borderRadius: "12px",
+        border: "1px solid #E5E7EB",
+        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.07)",
+      };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-sm font-medium text-gray-500">
+        <CardTitle className="text-sm font-medium text-gray-500 dark:text-zinc-400">
           {interpolate(copy.cards.weeklyOverview, {
             date: format(parseISO(selectedDate), "MMM d, yyyy"),
           })}
@@ -40,27 +59,23 @@ export function WeeklyChart({ data, selectedDate }: WeeklyChartProps) {
             data={data}
             margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
             <XAxis
               dataKey="day"
-              tick={{ fontSize: 12, fill: "#9CA3AF" }}
+              tick={{ fontSize: 12, fill: axisColor }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis
               tickFormatter={(v) => `₱${v}`}
-              tick={{ fontSize: 11, fill: "#9CA3AF" }}
+              tick={{ fontSize: 11, fill: axisColor }}
               axisLine={false}
               tickLine={false}
               width={55}
             />
             <Tooltip
               formatter={(value) => formatPeso(Number(value))}
-              contentStyle={{
-                borderRadius: "12px",
-                border: "1px solid #E5E7EB",
-                boxShadow: "0 4px 6px -1px rgba(0,0,0,0.07)",
-              }}
+              contentStyle={tooltipStyle}
             />
             <Bar dataKey="profit" fill="#16a34a" radius={[4, 4, 0, 0]} name={copy.cards.profit} />
             <Bar dataKey="expenses" fill="#FCA5A5" radius={[4, 4, 0, 0]} name={copy.cards.expenses} />

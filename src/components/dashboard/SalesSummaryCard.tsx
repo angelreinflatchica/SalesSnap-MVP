@@ -22,16 +22,16 @@ export function SalesSummaryCard({ sales, totalSales }: SalesSummaryCardProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>{copy.cards.totalSales}</CardTitle>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
             <TrendingUp className="h-4 w-4 text-green-600" />
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-2xl font-bold font-mono text-gray-900">
+        <p className="text-2xl font-bold font-mono text-gray-900 dark:text-zinc-100">
           {formatPeso(totalSales)}
         </p>
-        <p className="mt-1 text-xs text-gray-400">
+        <p className="mt-1 text-xs text-gray-400 dark:text-zinc-500">
           {interpolate(copy.cards.selectedDayEntries, {
             count: sales.length,
             label: entryLabel,

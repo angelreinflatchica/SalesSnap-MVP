@@ -197,7 +197,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
               key={label}
               type="button"
               onClick={() => setValue("label", label)}
-              className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition-colors"
+              className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition-colors dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-green-500 dark:hover:text-green-400 dark:hover:bg-green-950/30"
             >
               {label}
             </button>
@@ -214,14 +214,14 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
               {...register("label")}
             />
             {errors.label && (
-              <p className="text-xs text-red-600">{errors.label.message}</p>
+              <p className="text-xs text-red-600 dark:text-red-400">{errors.label.message}</p>
             )}
           </div>
 
           <div className="w-full sm:w-36 space-y-1.5">
             <Label htmlFor="expense-amount">{copy.forms.amount}</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-500 dark:text-zinc-400">
                 ₱
               </span>
               <Input
@@ -235,13 +235,13 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
               />
             </div>
             {errors.amount && (
-              <p className="text-xs text-red-600">{errors.amount.message}</p>
+              <p className="text-xs text-red-600 dark:text-red-400">{errors.amount.message}</p>
             )}
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs font-medium text-gray-600">How many days will this last?</Label>
+          <Label className="text-xs font-medium text-gray-600 dark:text-zinc-400">How many days will this last?</Label>
           <div className="flex flex-wrap gap-2">
             {SPREAD_OPTIONS.map((days) => (
               <button
@@ -251,7 +251,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   spreadDays === days
                     ? "bg-emerald-500 text-white"
-                    : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300"
+                    : "bg-white border border-gray-200 text-gray-600 hover:border-gray-300 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-500"
                 }`}
               >
                 {days === 1 ? "1 day" : `${days} days`}
@@ -261,8 +261,8 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
         </div>
 
         {spreadDays > 1 && dailyAmount !== null && spreadEndDate && (
-          <div className="rounded-xl bg-blue-50 border border-blue-200 p-3">
-            <p className="text-xs text-blue-900">
+          <div className="rounded-xl bg-blue-50 border border-blue-200 p-3 dark:bg-blue-950/30 dark:border-blue-800">
+            <p className="text-xs text-blue-900 dark:text-blue-200">
               <span className="font-semibold">Daily cost:</span> {formatPeso(dailyAmount)} • 
               <span className="font-semibold ml-2">Covers until:</span> {format(spreadEndDate, "EEEE, MMMM d")}
             </p>
@@ -272,7 +272,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-green-500 dark:hover:text-green-400 dark:hover:bg-green-950/30"
         >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -284,20 +284,20 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
 
       {expenses.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-zinc-500">
             {copy.forms.selectedDayExpenses}
           </p>
           <ul className="space-y-1.5">
             {expenses.map((expense) => (
               <li
                 key={expense.id}
-                className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3"
+                className="flex items-center justify-between rounded-xl border border-gray-100 bg-white px-4 py-3 dark:border-zinc-700/50 dark:bg-zinc-800/50"
               >
                 <div>
-                  <p className="text-sm font-medium text-gray-800">
+                  <p className="text-sm font-medium text-gray-800 dark:text-zinc-200">
                     {expense.label}
                   </p>
-                  <p className="text-xs text-gray-400 font-mono">
+                  <p className="text-xs text-gray-400 font-mono dark:text-zinc-500">
                     {formatPeso(expense.amount)}
                   </p>
                 </div>
@@ -305,7 +305,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
                   <button
                     type="button"
                     onClick={() => startEdit(expense)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-blue-500 hover:bg-blue-50 transition-colors dark:text-zinc-500 dark:hover:text-blue-400 dark:hover:bg-blue-950/40"
                     aria-label="Edit expense"
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -313,7 +313,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
                   <button
                     type="button"
                     onClick={() => deleteExpense(expense.id)}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:text-red-500 hover:bg-red-50 transition-colors dark:text-zinc-500 dark:hover:text-red-400 dark:hover:bg-red-950/40"
                     aria-label={interpolate(copy.forms.deleteExpense, { label: expense.label })}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -365,7 +365,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
             <button
               type="button"
               onClick={() => setEditingExpense(null)}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50"
+              className="rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
             >
               Cancel
             </button>
