@@ -258,12 +258,20 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-      <nav className="flex items-center justify-between px-6 sm:px-8 lg:px-12 py-4 w-full">
-        <div className="flex items-center gap-3">
+      <nav className="flex w-full flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-600">
             <TrendingUp className="h-4 w-4 text-white" />
           </div>
           <span className="text-lg font-bold text-gray-900 dark:text-zinc-100">SalesSnap</span>
+        </div>
+        <div className="flex w-full items-center justify-center gap-3 sm:w-auto sm:justify-end">
+          <Link
+            href="/login"
+            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors dark:text-zinc-300 dark:hover:text-zinc-100"
+          >
+            {content.signIn}
+          </Link>
           <ThemeToggle compact />
           <button
             type="button"
@@ -284,20 +292,6 @@ export default function LandingPage() {
               {language === "en" ? "English" : "Tagalog"}
             </span>
           </button>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors dark:text-zinc-300 dark:hover:text-zinc-100"
-          >
-            {content.signIn}
-          </Link>
-          <Link
-            href="/register"
-            className="rounded-full bg-green-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-700 transition-colors"
-          >
-            {content.getStarted}
-          </Link>
         </div>
       </nav>
 
