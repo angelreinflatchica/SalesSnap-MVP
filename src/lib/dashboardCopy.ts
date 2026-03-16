@@ -27,6 +27,15 @@ export const dashboardCopy = {
       entriesOnSelectedDay: "Entries on Selected Day",
       logSaleCard: "Log a Sale",
       addExpenseCard: "Add Expense",
+      quickGuideTitle: "Quick Step-by-Step",
+      quickGuideSubtitle: "Use this flow every day for cleaner records and more accurate profit.",
+      quickGuideSteps: [
+        "Pick the correct date first.",
+        "Log each sale immediately after every transaction.",
+        "Add daily expenses as they happen.",
+        "Use Bulk Expense for costs that should be spread across multiple days (like rent, utilities, or advance supplies).",
+        "Check Profit and Summary before closing your day.",
+      ],
     },
     history: {
       title: "History",
@@ -144,6 +153,15 @@ export const dashboardCopy = {
       entriesOnSelectedDay: "Mga Entry sa Napiling Araw",
       logSaleCard: "Magtala ng Benta",
       addExpenseCard: "Magdagdag ng Gastos",
+      quickGuideTitle: "Mabilis na Step-by-Step",
+      quickGuideSubtitle: "Sundin ang flow na ito araw-araw para mas maayos ang records at mas accurate ang tubo.",
+      quickGuideSteps: [
+        "Piliin muna ang tamang petsa.",
+        "Itala agad ang bawat benta pagkatapos ng bawat transaksyon.",
+        "Ilagay ang arawang gastos habang nangyayari.",
+        "Gamitin ang Bulk Expense para sa gastos na dapat hinahati sa maraming araw (tulad ng renta, utilities, o supplies na binili nang maramihan).",
+        "Suriin ang Profit at Summary bago isara ang araw.",
+      ],
     },
     history: {
       title: "Kasaysayan",
