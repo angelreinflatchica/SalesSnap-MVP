@@ -62,6 +62,7 @@ const copy = {
       "Morning: open Dashboard and check yesterday's numbers.",
       "During sales: log every transaction immediately.",
       "After spending: add expenses as soon as they happen.",
+      "If internet is weak, keep logging entries - SalesSnap can queue data and sync when connection returns.",
       "End of day: compare total sales vs total expenses.",
       "Weekly: open Summary and History to spot patterns.",
     ],
@@ -98,6 +99,11 @@ const copy = {
         question: "Can I use SalesSnap on my phone?",
         answer:
           "Yes. SalesSnap is designed to work on mobile and desktop so you can track anytime.",
+      },
+      {
+        question: "What if my internet is weak or offline?",
+        answer:
+          "You can continue logging sales and expenses. SalesSnap stores entries and automatically syncs them when your connection becomes stable again.",
       },
       {
         question: "Where do I see trends over time?",
@@ -176,6 +182,7 @@ const copy = {
       "Umaga: buksan ang Dashboard at tingnan ang bilang kahapon.",
       "Habang nagbebenta: itala agad ang bawat transaksyon.",
       "Pag may gastos: ilagay agad para hindi makalimutan.",
+      "Kung mahina ang internet, magtala ka pa rin - maaaring i-queue ng SalesSnap ang data at i-sync kapag bumalik ang maayos na koneksyon.",
       "Bago matapos ang araw: ikumpara ang total sales at total expenses.",
       "Lingguhan: buksan ang Summary at History para makita ang pattern.",
     ],
@@ -212,6 +219,11 @@ const copy = {
         question: "Pwede ba ang SalesSnap sa phone?",
         answer:
           "Oo. Dinisenyo ang SalesSnap para gumana sa mobile at desktop para makapag-track ka kahit saan.",
+      },
+      {
+        question: "Paano kung mahina ang internet o offline ako?",
+        answer:
+          "Pwede ka pa ring magtala ng benta at gastos. Ise-save ng SalesSnap ang entries at awtomatikong magsi-sync kapag stable na ulit ang koneksyon.",
       },
       {
         question: "Saan ko makikita ang trends sa paglipas ng panahon?",
