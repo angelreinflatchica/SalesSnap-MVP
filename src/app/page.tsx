@@ -265,6 +265,25 @@ export default function LandingPage() {
           </div>
           <span className="text-lg font-bold text-gray-900 dark:text-zinc-100">SalesSnap</span>
           <ThemeToggle compact />
+          <button
+            type="button"
+            onClick={() => setLanguage(language === "en" ? "tl" : "en")}
+            role="switch"
+            aria-checked={language === "tl"}
+            aria-label="Toggle language between English and Tagalog"
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-green-200 bg-white px-2.5 transition-colors hover:border-green-300 dark:border-zinc-700 dark:bg-zinc-800"
+          >
+            <span className="relative inline-flex h-5 w-9 items-center rounded-full bg-green-100 p-0.5 dark:bg-green-950/40">
+              <span
+                className={`h-4 w-4 rounded-full bg-green-600 shadow-sm transition-transform ${
+                  language === "tl" ? "translate-x-4" : "translate-x-0"
+                }`}
+              />
+            </span>
+            <span className="text-[11px] font-semibold text-gray-700 dark:text-zinc-200">
+              {language === "en" ? "English" : "Tagalog"}
+            </span>
+          </button>
         </div>
         <div className="flex items-center gap-3">
           <Link
@@ -306,16 +325,6 @@ export default function LandingPage() {
           <Zap className="h-5 w-5" />
           {content.heroCta}
         </Link>
-
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setLanguage(language === "en" ? "tl" : "en")}
-            className="rounded-full border border-green-200 bg-white px-4 py-2 text-sm font-semibold text-green-700 transition-colors hover:border-green-300 hover:bg-green-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-green-400 dark:hover:bg-zinc-700"
-          >
-            {content.languageLabel}
-          </button>
-        </div>
       </section>
 
       <section className="px-6 sm:px-8 lg:px-12 pb-20 w-full">
