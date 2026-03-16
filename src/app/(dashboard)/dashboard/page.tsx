@@ -82,6 +82,27 @@ export default function DashboardPage() {
         />
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-semibold text-foreground">
+            {copy.dashboard.quickGuideTitle}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">{copy.dashboard.quickGuideSubtitle}</p>
+        </CardHeader>
+        <CardContent>
+          <ol className="space-y-2">
+            {copy.dashboard.quickGuideSteps.map((step, index) => (
+              <li key={step} className="flex items-start gap-3">
+                <span className="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-green-100 px-1 text-xs font-semibold text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                  {index + 1}
+                </span>
+                <span className="text-sm leading-relaxed text-foreground">{step}</span>
+              </li>
+            ))}
+          </ol>
+        </CardContent>
+      </Card>
+
       {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="md:col-span-3">
