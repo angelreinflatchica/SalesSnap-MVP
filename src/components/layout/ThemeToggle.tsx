@@ -22,7 +22,7 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
         className={
           compact
             ? "inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-500"
-            : "inline-flex h-9 items-center justify-center rounded-lg border border-gray-200 px-3 text-sm text-gray-500"
+            : "inline-flex h-9 items-center justify-center rounded-lg px-3 text-sm text-gray-500"
         }
         disabled
       >
@@ -39,7 +39,7 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
       className={
         compact
           ? "inline-flex h-9 w-9 items-center justify-center rounded-full text-gray-700 transition-colors hover:bg-gray-100 dark:text-zinc-100 dark:hover:bg-zinc-800"
-          : "inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
+          : "inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-white px-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800"
       }
       aria-label="Toggle theme"
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}

@@ -69,30 +69,40 @@ export function DashboardLanguageToggle({ compact = false }: DashboardLanguageTo
   const { language, setLanguage } = useDashboardLanguage();
 
   return (
-    <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1 dark:border-zinc-700 dark:bg-zinc-900">
+    <div
+      className={
+        compact
+          ? "inline-flex w-14 flex-col gap-1 rounded-xl bg-white p-1 dark:bg-zinc-900"
+          : "inline-flex items-center rounded-xl bg-white p-1 dark:bg-zinc-900"
+      }
+      role="group"
+      aria-label="Language selector"
+    >
       <button
         type="button"
         onClick={() => setLanguage("en")}
-        className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+        className={`${compact ? "w-full px-1 py-1 text-[10px]" : "min-h-[36px] px-3 py-1.5 text-xs"} rounded-lg font-semibold leading-tight transition-colors ${
           language === "en"
-            ? "bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-300"
-            : "text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-100"
+            ? "bg-green-100 text-green-800 shadow-sm dark:bg-green-950/50 dark:text-green-200"
+            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
         }`}
         aria-pressed={language === "en"}
+        aria-label="Switch language to English"
       >
-        {compact ? "EN" : "English"}
+        English
       </button>
       <button
         type="button"
         onClick={() => setLanguage("tl")}
-        className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+        className={`${compact ? "w-full px-1 py-1 text-[10px]" : "min-h-[36px] px-3 py-1.5 text-xs"} rounded-lg font-semibold leading-tight transition-colors ${
           language === "tl"
-            ? "bg-green-50 text-green-700 dark:bg-green-950/40 dark:text-green-300"
-            : "text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-100"
+            ? "bg-green-100 text-green-800 shadow-sm dark:bg-green-950/50 dark:text-green-200"
+            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
         }`}
         aria-pressed={language === "tl"}
+        aria-label="Switch language to Tagalog"
       >
-        {compact ? "TL" : "Tagalog"}
+        Tagalog
       </button>
     </div>
   );

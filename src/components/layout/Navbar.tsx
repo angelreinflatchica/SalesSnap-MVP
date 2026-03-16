@@ -29,21 +29,33 @@ export function Navbar({ businessName, mobileNumber }: NavbarProps) {
       <div className="flex items-center gap-3">
         <DashboardLanguageToggle compact />
         <ThemeToggle compact />
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/40">
-          <User className="h-4 w-4 text-green-700 dark:text-green-400" />
-        </div>
-        <div className="hidden sm:block">
-          <p className="text-sm font-medium text-gray-900 leading-none dark:text-zinc-100">
-            {businessName ?? mobileNumber ?? copy.common.myBusiness}
-          </p>
-        </div>
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-          aria-label={copy.common.signOut}
-        >
-          <LogOut className="h-4 w-4" />
-        </button>
+
+        <details className="relative">
+          <summary className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-full bg-green-100 text-green-700 transition-colors hover:bg-green-200 dark:bg-green-900/40 dark:text-green-400 dark:hover:bg-green-900/60">
+            <User className="h-4 w-4" />
+            <span className="sr-only">Account menu</span>
+          </summary>
+
+          <div className="absolute right-0 z-50 mt-2 w-56 rounded-xl border border-gray-200 bg-white p-2 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+            <div className="rounded-lg px-2 py-2">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 dark:text-zinc-400">
+                Account
+              </p>
+              <p className="mt-1 truncate text-sm font-medium text-gray-900 dark:text-zinc-100">
+                {businessName ?? mobileNumber ?? copy.common.myBusiness}
+              </p>
+            </div>
+
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="mt-1 inline-flex min-h-[40px] w-full items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+              aria-label={copy.common.signOut}
+            >
+              <LogOut className="h-4 w-4" />
+              {copy.common.signOut}
+            </button>
+          </div>
+        </details>
       </div>
     </header>
   );

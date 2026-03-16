@@ -91,6 +91,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </nav>
 
       <div className="mt-4 space-y-2">
+        <div className={cn("space-y-2", collapsed && "flex flex-col items-center")}>
+          <DashboardLanguageToggle compact={collapsed} />
+          <ThemeToggle compact={collapsed} />
+        </div>
+
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           title={collapsed ? copy.common.signOut : undefined}
@@ -104,11 +109,6 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           <LogOut className="h-4.5 w-4.5" />
           {!collapsed && copy.common.signOut}
         </button>
-
-        <div className={cn("space-y-2", collapsed && "flex flex-col items-center")}>
-          <DashboardLanguageToggle compact={collapsed} />
-          <ThemeToggle compact={collapsed} />
-        </div>
       </div>
     </aside>
   );
