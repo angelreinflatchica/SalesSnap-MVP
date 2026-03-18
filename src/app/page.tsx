@@ -269,72 +269,81 @@ export default function LandingPage() {
   }, [language]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-      <nav className="flex w-full flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-600">
-            <TrendingUp className="h-4 w-4 text-white" />
+    <div className="relative min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-12 top-10 h-48 rounded-full bg-green-200/40 blur-3xl dark:bg-green-900/30"
+      />
+
+      <nav className="px-4 py-4 sm:px-6 lg:px-10">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 rounded-3xl border border-white/40 bg-white/80 px-4 py-3 shadow-sm backdrop-blur dark:border-zinc-800/60 dark:bg-zinc-900/70 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start sm:gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-green-600 text-white">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+            <span className="text-lg font-bold tracking-tight text-gray-900 dark:text-zinc-100">SalesSnap</span>
           </div>
-          <span className="text-lg font-bold text-gray-900 dark:text-zinc-100">SalesSnap</span>
-        </div>
-        <div className="flex w-full items-center justify-center gap-3 sm:w-auto sm:justify-end">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors dark:text-zinc-300 dark:hover:text-zinc-100"
-          >
-            {content.signIn}
-          </Link>
-          <ThemeToggle compact />
-          <button
-            type="button"
-            onClick={() => setLanguage(language === "en" ? "tl" : "en")}
-            role="switch"
-            aria-checked={language === "tl"}
-            aria-label="Toggle language between English and Tagalog"
-            className="inline-flex h-9 items-center gap-2 rounded-full border border-green-200 bg-white px-2.5 transition-colors hover:border-green-300 dark:border-zinc-700 dark:bg-zinc-800"
-          >
-            <span className="relative inline-flex h-5 w-9 items-center rounded-full bg-green-100 p-0.5 dark:bg-green-950/40">
-              <span
-                className={`h-4 w-4 rounded-full bg-green-600 shadow-sm transition-transform ${
-                  language === "tl" ? "translate-x-4" : "translate-x-0"
-                }`}
-              />
-            </span>
-            <span className="text-[11px] font-semibold text-gray-700 dark:text-zinc-200">
-              {language === "en" ? "English" : "Tagalog"}
-            </span>
-          </button>
+          <div className="flex w-full items-center justify-center gap-3 sm:w-auto sm:justify-end">
+            <Link
+              href="/login"
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+            >
+              {content.signIn}
+            </Link>
+            <ThemeToggle compact />
+            <button
+              type="button"
+              onClick={() => setLanguage(language === "en" ? "tl" : "en")}
+              role="switch"
+              aria-checked={language === "tl"}
+              aria-label="Toggle language between English and Tagalog"
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-green-200 bg-white px-2.5 text-xs font-semibold tracking-wide transition-colors hover:border-green-300 dark:border-zinc-700 dark:bg-zinc-800"
+            >
+              <span className="relative inline-flex h-5 w-9 items-center rounded-full bg-green-100 p-0.5 dark:bg-green-950/40">
+                <span
+                  className={`h-4 w-4 rounded-full bg-green-600 shadow-sm transition-transform ${
+                    language === "tl" ? "translate-x-4" : "translate-x-0"
+                  }`}
+                />
+              </span>
+              <span className="text-[11px] font-semibold text-gray-700 dark:text-zinc-200">
+                {language === "en" ? "English" : "Tagalog"}
+              </span>
+            </button>
+          </div>
         </div>
       </nav>
 
-      <section className="px-6 sm:px-8 lg:px-12 py-16 sm:py-24 text-center w-full">
-        <div className="flex justify-center mb-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-600 shadow-xl shadow-green-200 dark:shadow-green-900/40">
-            <TrendingUp className="h-8 w-8 text-white" />
+      <section className="px-4 py-16 sm:px-6 sm:py-24 lg:px-10">
+        <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-8 rounded-[40px] border border-green-100/60 bg-white/90 px-6 py-10 text-center shadow-xl shadow-green-100/80 dark:border-green-900/60 dark:bg-zinc-900/80 dark:shadow-green-900/30 sm:px-10">
+          <div className="flex justify-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-600 shadow-xl shadow-green-200 dark:shadow-green-900/40">
+              <TrendingUp className="h-8 w-8 text-white" />
+            </div>
           </div>
+
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold leading-tight text-green-900 dark:text-green-200 sm:text-5xl">
+              SalesSnap
+            </h1>
+            <p className="text-lg text-gray-500 italic sm:text-xl dark:text-zinc-400">{content.heroTagline}</p>
+            <p className="text-base leading-relaxed text-gray-600 sm:text-lg dark:text-zinc-300">
+              {content.heroBody}
+            </p>
+          </div>
+
+          <Link
+            href="/register"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-green-600 px-10 py-4 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-green-200 transition-all hover:-translate-y-0.5 hover:bg-green-700 hover:shadow-green-300 dark:shadow-green-900/50 dark:hover:shadow-green-900/70 sm:w-auto"
+          >
+            <Zap className="h-5 w-5" />
+            {content.heroCta}
+          </Link>
         </div>
-
-        <h1 className="text-5xl sm:text-6xl font-bold text-green-900 tracking-tight mb-4 dark:text-green-300">
-          SalesSnap
-        </h1>
-        <p className="text-xl sm:text-2xl text-gray-500 italic mb-6 dark:text-zinc-400">
-          {content.heroTagline}
-        </p>
-        <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto mb-10 leading-relaxed dark:text-zinc-300">
-          {content.heroBody}
-        </p>
-
-        <Link
-          href="/register"
-          className="inline-flex items-center gap-2 rounded-full bg-green-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-green-200 hover:bg-green-700 hover:shadow-green-300 transition-all w-full sm:w-auto justify-center dark:shadow-green-900/40 dark:hover:shadow-green-900/60"
-        >
-          <Zap className="h-5 w-5" />
-          {content.heroCta}
-        </Link>
       </section>
 
-      <section className="px-6 sm:px-8 lg:px-12 pb-20 w-full">
-        <div className="mx-auto mb-12 max-w-5xl rounded-3xl border border-green-100 bg-white/95 p-6 shadow-sm sm:p-8 dark:border-green-900/40 dark:bg-zinc-900/90">
+      <section className="px-4 pb-24 sm:px-6 lg:px-10">
+        <div className="mx-auto mb-12 w-full max-w-6xl rounded-3xl border border-green-100 bg-white/95 p-6 shadow-sm sm:p-8 dark:border-green-900/40 dark:bg-zinc-900/90">
           <h2 className="text-2xl font-bold text-green-900 dark:text-green-300 sm:text-3xl">
             {content.guideTitle}
           </h2>
@@ -426,7 +435,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-green-100 bg-white p-6 shadow-sm dark:border-green-900/50 dark:bg-zinc-900">
             <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/40">
               <TrendingUp className="h-5 w-5 text-green-700" />
@@ -465,7 +474,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-gray-100 py-6 text-center text-sm text-gray-400 dark:border-zinc-800 dark:text-zinc-500">
+      <footer className="border-t border-gray-100 px-4 py-6 text-center text-sm text-gray-400 dark:border-zinc-800 dark:text-zinc-500">
         © {new Date().getFullYear()} SalesSnap. {content.footer}
       </footer>
     </div>
