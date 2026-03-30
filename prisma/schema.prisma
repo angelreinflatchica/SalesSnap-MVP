@@ -16,6 +16,10 @@ model User {
   password     String
   businessName String?
   currency     String       @default("PHP")
+  displayName  String?
+  tagline      String?
+  avatarColor  String?      @default("#16a34a")
+  accountClaimed Boolean    @default(false)
   createdAt    DateTime     @default(now())
   sales        SalesEntry[]
   expenses     Expense[]

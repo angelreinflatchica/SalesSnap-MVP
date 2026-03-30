@@ -82,32 +82,64 @@ export default function DashboardPage() {
         />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-semibold text-foreground">
-            {copy.dashboard.quickGuideTitle}
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">{copy.dashboard.quickGuideSubtitle}</p>
-        </CardHeader>
-        <CardContent>
-          <ol className="space-y-2">
-            {copy.dashboard.quickGuideSteps.map((step, index) => (
-              <li key={step} className="flex items-start gap-3">
-                <span className="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-green-100 px-1 text-xs font-semibold text-green-800 dark:bg-green-900/40 dark:text-green-300">
-                  {index + 1}
-                </span>
-                <span className="text-sm leading-relaxed text-foreground">{step}</span>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
+      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-foreground">
+              {copy.dashboard.quickGuideTitle}
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">{copy.dashboard.quickGuideSubtitle}</p>
+          </CardHeader>
+          <CardContent>
+            <ol className="space-y-2">
+              {copy.dashboard.quickGuideSteps.map((step, index) => (
+                <li key={step} className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-green-100 px-1 text-xs font-semibold text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                    {index + 1}
+                  </span>
+                  <span className="text-sm leading-relaxed text-foreground">{step}</span>
+                </li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-4 lg:col-span-2">
+          <Card className="border-amber-100 dark:border-amber-900/30">
+            <CardHeader>
+              <CardTitle className="text-base font-semibold text-foreground">
+                {copy.dashboard.addExpenseCard}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AddExpenseForm
+                expenses={expenses}
+                onSuccess={fetchData}
+                selectedDate={selectedDate}
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="border-green-100 dark:border-green-900/40">
+            <CardHeader>
+              <CardTitle className="text-base font-semibold text-foreground">
+                {copy.dashboard.logSaleCard}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LogSalesForm
+                sales={sales}
+                onSuccess={fetchData}
+                selectedDate={selectedDate}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div className="md:col-span-3">
-          <ProfitCard profit={profit} />
-        </div>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <ProfitCard profit={profit} />
         <SalesSummaryCard sales={sales} totalSales={totalSales} />
         <ExpenseSummaryCard expenses={expenses} totalExpenses={totalExpenses} />
         <div className="flex items-center justify-center rounded-xl border border-border bg-card p-6">
@@ -176,39 +208,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       )}
-
-      {/* Entry forms */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-foreground">
-              {copy.dashboard.logSaleCard}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <LogSalesForm
-              sales={sales}
-              onSuccess={fetchData}
-              selectedDate={selectedDate}
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-foreground">
-              {copy.dashboard.addExpenseCard}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <AddExpenseForm
-              expenses={expenses}
-              onSuccess={fetchData}
-              selectedDate={selectedDate}
-            />
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Weekly chart */}
       <WeeklyChart data={chartData} selectedDate={selectedDate} />
