@@ -38,14 +38,25 @@ export async function GET() {
 
   // ── Group by day ────────────────────────────────────────────────────────────
   const dayMap = new Map<string, { sales: number; expenses: number }>();
+  let earliestDataDate: Date | null = null;
+  const markEarliest = (date: Date) => {
+    const normalized = startOfDay(date);
+    if (!earliestDataDate || normalized < earliestDataDate) {
+      earliestDataDate = normalized;
+    }
+  };
 
   for (const s of allSales) {
-    const key = format(new Date(s.date), "yyyy-MM-dd");
+    const dateObj = new Date(s.date);
+    markEarliest(dateObj);
+    const key = format(dateObj, "yyyy-MM-dd");
     const prev = dayMap.get(key) ?? { sales: 0, expenses: 0 };
     dayMap.set(key, { ...prev, sales: prev.sales + s.amount });
   }
   for (const e of allExpenses) {
-    const key = format(new Date(e.date), "yyyy-MM-dd");
+    const dateObj = new Date(e.date);
+    markEarliest(dateObj);
+    const key = format(dateObj, "yyyy-MM-dd");
     const prev = dayMap.get(key) ?? { sales: 0, expenses: 0 };
     dayMap.set(key, { ...prev, expenses: prev.expenses + e.amount });
   }
@@ -96,8 +107,9 @@ export async function GET() {
   });
 
   // ── Monthly summary (last 12 months) ───────────────────────────────────────
-  const months12Start = startOfMonth(subDays(today, 364));
-  const monthStarts = eachMonthOfInterval({ start: months12Start, end: today });
+  const defaultMonthsStart = startOfMonth(subDays(today, 364));
+  const intervalStart = earliestDataDate ? startOfMonth(earliestDataDate) : defaultMonthsStart;
+  const monthStarts = eachMonthOfInterval({ start: intervalStart, end: today });
 
   const monthlySummary = monthStarts.map((ms) => {
     const me = endOfMonth(ms);

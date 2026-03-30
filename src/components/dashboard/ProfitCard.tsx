@@ -16,7 +16,7 @@ export function ProfitCard({ profit }: ProfitCardProps) {
   const copy = getDashboardCopy(language);
 
   return (
-    <Card className="w-full border-green-100 bg-gradient-to-br from-green-50 to-white dark:border-green-900/40 dark:from-emerald-950/50 dark:to-slate-950/40">
+    <Card className="w-full border-green-100 bg-gradient-to-br from-green-50 via-white to-emerald-50 shadow-[0_15px_45px_rgba(34,197,94,0.25)] ring-1 ring-green-100/60 dark:border-green-900/50 dark:from-emerald-950/60 dark:via-slate-950/40 dark:to-emerald-900/40 dark:shadow-[0_20px_55px_rgba(16,185,129,0.25)]">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div>
@@ -30,7 +30,7 @@ export function ProfitCard({ profit }: ProfitCardProps) {
               )}
             </div>
             <p
-              className={`text-4xl font-bold font-mono tracking-tight ${
+              className={`text-4xl font-bold font-mono tracking-tight drop-shadow-[0_0_15px_rgba(34,197,94,0.35)] ${
                 isPositive
                   ? "text-green-700 dark:text-green-400"
                   : isBreakEven

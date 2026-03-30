@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 import { format, parseISO } from "date-fns";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Search } from "lucide-react";
 import { formatPeso } from "@/lib/formatCurrency";
 import { calculateProfit } from "@/lib/profit";
 import type { SalesEntry, Expense } from "@/types";
@@ -53,6 +53,7 @@ export default function HistoryPage() {
   const [editNote, setEditNote] = useState<string>("");
   const [editDate, setEditDate] = useState<string>("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const { language } = useDashboardLanguage();
   const copy = getDashboardCopy(language);
 
@@ -113,6 +114,44 @@ export default function HistoryPage() {
     fetchHistory();
   }, [fetchHistory]);
 
+  const filteredHistory = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return grouped;
+    return grouped.filter((entry) => {
+      const dateFormatted = format(parseISO(entry.date), "EEEE, MMMM d, yyyy").toLowerCase();
+      if (dateFormatted.includes(query) || entry.date.includes(query)) return true;
+      if (entry.smartSummary?.toLowerCase().includes(query)) return true;
+      const saleMatch = entry.sales.some((sale) => {
+        return (
+          sale.note?.toLowerCase().includes(query) ||
+          String(sale.amount).includes(query)
+        );
+      });
+      if (saleMatch) return true;
+      const expenseMatch = entry.expenses.some((expense) => {
+        return (
+          expense.label.toLowerCase().includes(query) ||
+          String(expense.amount).includes(query)
+        );
+      });
+      if (expenseMatch) return true;
+      if (
+        String(entry.totalSales).includes(query) ||
+        String(entry.totalExpenses).includes(query) ||
+        String(entry.profit).includes(query)
+      ) {
+        return true;
+      }
+      return false;
+    });
+  }, [grouped, searchTerm]);
+
+  const hasSearch = searchTerm.trim().length > 0;
+  const visibleEntries = hasSearch ? filteredHistory : grouped;
+  const totalTrackedDays = grouped.length;
+  const showingCount = hasSearch ? visibleEntries.length : totalTrackedDays;
+  const showSearchEmpty = totalTrackedDays > 0 && hasSearch && visibleEntries.length === 0;
+
   function startEdit(sale: SalesEntry) {
     setEditingSale(sale);
     setEditAmount(sale.amount);
@@ -169,11 +208,32 @@ export default function HistoryPage() {
         )}
       </div>
 
+      <div className="rounded-2xl border border-border/80 bg-card/80 p-4 shadow-sm backdrop-blur-sm">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-muted-foreground">Filter history</p>
+            <p className="text-xs text-muted-foreground">
+              Showing {showingCount} of {totalTrackedDays} tracked day{totalTrackedDays === 1 ? "" : "s"}
+            </p>
+          </div>
+          <div className="relative w-full sm:max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={copy.history.searchPlaceholder}
+              className="pl-9"
+              aria-label={copy.history.searchPlaceholder}
+            />
+          </div>
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-green-200 border-t-green-600"></div>
         </div>
-      ) : grouped.length === 0 ? (
+      ) : totalTrackedDays === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
             <p className="text-muted-foreground">{copy.history.noEntries}</p>
@@ -182,9 +242,22 @@ export default function HistoryPage() {
             </p>
           </CardContent>
         </Card>
+      ) : showSearchEmpty ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center gap-3 py-12 text-center">
+            <p className="text-sm text-muted-foreground">{copy.history.searchEmpty}</p>
+            <button
+              type="button"
+              onClick={() => setSearchTerm("")}
+              className="inline-flex items-center rounded-full border border-border px-4 py-1.5 text-xs font-semibold text-foreground hover:bg-muted"
+            >
+              Clear search
+            </button>
+          </CardContent>
+        </Card>
       ) : (
         <div className="space-y-4">
-          {grouped.map(({ date, sales, expenses, totalSales, totalExpenses, profit, smartSummary, summaryProvider }) => (
+          {visibleEntries.map(({ date, sales, expenses, totalSales, totalExpenses, profit, smartSummary, summaryProvider }) => (
             <Card key={date}>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">

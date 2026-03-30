@@ -241,7 +241,12 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs font-medium text-gray-600 dark:text-zinc-400">How many days will this last?</Label>
+          <Label className="text-xs font-medium text-gray-600 dark:text-zinc-400">
+            How many days will this last?
+            <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide text-emerald-600 dark:text-emerald-300">
+              (Bulk Expenses)
+            </span>
+          </Label>
           <div className="flex flex-wrap gap-2">
             {SPREAD_OPTIONS.map((days) => (
               <button
@@ -272,7 +277,7 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors dark:border-zinc-600 dark:bg-zinc-800/50 dark:text-zinc-300 dark:hover:border-green-500 dark:hover:text-green-400 dark:hover:bg-green-950/30"
+          className="flex w-full min-h-[44px] items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700 active:bg-green-800 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -383,4 +388,3 @@ export function AddExpenseForm({ expenses, onSuccess, selectedDate }: AddExpense
     </div>
   );
 }
-

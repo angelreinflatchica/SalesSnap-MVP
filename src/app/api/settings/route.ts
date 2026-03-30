@@ -4,13 +4,22 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { compare, hash } from "bcryptjs";
 
-const settingsSchema = z.object({
-  businessName: z.string().max(100).optional(),
-  currency: z.string().length(3).optional(),
-  currentPassword: z.string().min(8).optional(),
-  newPassword: z.string().min(8).optional(),
-  confirmPassword: z.string().min(8).optional(),
-}).superRefine((data, ctx) => {
+const settingsSchema = z
+  .object({
+    businessName: z.string().max(100).optional(),
+    currency: z.string().length(3).optional(),
+    displayName: z.string().max(60).optional(),
+    tagline: z.string().max(120).optional(),
+    avatarColor: z
+      .string()
+      .regex(/^#([0-9A-Fa-f]{6})$/, "Invalid color")
+      .optional(),
+    accountClaimed: z.boolean().optional(),
+    currentPassword: z.string().min(8).optional(),
+    newPassword: z.string().min(8).optional(),
+    confirmPassword: z.string().min(8).optional(),
+  })
+  .superRefine((data, ctx) => {
   const hasAnyPasswordField =
     !!data.currentPassword || !!data.newPassword || !!data.confirmPassword;
 
@@ -51,7 +60,7 @@ const settingsSchema = z.object({
       path: ["confirmPassword"],
     });
   }
-});
+  });
 
 export async function GET() {
   const session = await auth();
@@ -61,7 +70,16 @@ export async function GET() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, mobileNumber: true, businessName: true, currency: true },
+    select: {
+      id: true,
+      mobileNumber: true,
+      businessName: true,
+      currency: true,
+      displayName: true,
+      tagline: true,
+      avatarColor: true,
+      accountClaimed: true,
+    },
   });
 
   if (!user) {
@@ -74,6 +92,10 @@ export async function GET() {
       mobileNumber: user.mobileNumber,
       businessName: user.businessName,
       currency: user.currency,
+      displayName: user.displayName,
+      tagline: user.tagline,
+      avatarColor: user.avatarColor,
+      accountClaimed: user.accountClaimed,
     },
   });
 }
@@ -102,7 +124,15 @@ export async function PATCH(req: NextRequest) {
       ...profileFields
     } = parsed.data;
 
-    const updateData: { businessName?: string; currency?: string; password?: string } = {
+    const updateData: {
+      businessName?: string;
+      currency?: string;
+      displayName?: string;
+      tagline?: string;
+      avatarColor?: string;
+      accountClaimed?: boolean;
+      password?: string;
+    } = {
       ...profileFields,
     };
 
@@ -144,7 +174,16 @@ export async function PATCH(req: NextRequest) {
     const user = await prisma.user.update({
       where: { id: session.user.id },
       data: updateData,
-      select: { id: true, mobileNumber: true, businessName: true, currency: true },
+      select: {
+        id: true,
+        mobileNumber: true,
+        businessName: true,
+        currency: true,
+        displayName: true,
+        tagline: true,
+        avatarColor: true,
+        accountClaimed: true,
+      },
     });
 
     return NextResponse.json({
@@ -153,6 +192,10 @@ export async function PATCH(req: NextRequest) {
         mobileNumber: user.mobileNumber,
         businessName: user.businessName,
         currency: user.currency,
+        displayName: user.displayName,
+        tagline: user.tagline,
+        avatarColor: user.avatarColor,
+        accountClaimed: user.accountClaimed,
       },
     });
   } catch {

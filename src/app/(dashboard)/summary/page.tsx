@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { formatPeso } from "@/lib/formatCurrency";
 import { format, parseISO } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,6 +85,18 @@ export default function SummaryPage() {
   const [tab, setTab] = useState<"weekly" | "monthly">("weekly");
   const { language } = useDashboardLanguage();
   const copy = getDashboardCopy(language);
+  const filteredMonthlySummary = useMemo(() => {
+    if (!data) return [];
+    const currentLabel = format(new Date(), "MMMM yyyy");
+    const currentMonthRow = data.monthlySummary.find(
+      (m) => m.month === currentLabel && m.daysWithData > 0
+    );
+    if (currentMonthRow) {
+      return [currentMonthRow];
+    }
+    const firstMonthWithData = data.monthlySummary.find((m) => m.daysWithData > 0);
+    return firstMonthWithData ? [firstMonthWithData] : [];
+  }, [data]);
 
   useEffect(() => {
     setLoading(true);
@@ -276,38 +288,45 @@ export default function SummaryPage() {
             {/* ── Monthly Table ─────────────────────────────────────────────── */}
             {tab === "monthly" && (
               <div className="mt-4 space-y-2">
-                {[...data.monthlySummary].reverse().map((m) => (
-                  <Card key={m.month}>
-                    <CardContent className="px-4 py-3">
-                      <div className="flex items-center justify-between gap-4 flex-wrap">
-                        <div>
-                          <p className="text-sm font-semibold text-foreground">{m.month}</p>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {copy.summary.salesShort} {formatPeso(m.totalSales)} · {copy.summary.expensesLong} {formatPeso(m.totalExpenses)}
-                            {m.daysWithData > 0 && ` · ${interpolate(copy.summary.daysActive, { count: m.daysWithData })}`}
-                          </p>
-                        </div>
-                        <ProfitBadge value={m.profit} />
-                      </div>
-                      {/* Mini progress bar */}
-                      {(m.totalSales > 0 || m.totalExpenses > 0) && (
-                        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full bg-green-500"
-                            style={{
-                              width: `${Math.min(
-                                100,
-                                m.totalSales > 0
-                                  ? ((m.totalSales - m.totalExpenses) / m.totalSales) * 100
-                                  : 0
-                              )}%`,
-                            }}
-                          />
-                        </div>
-                      )}
+                {filteredMonthlySummary.length === 0 ? (
+                  <Card>
+                    <CardContent className="px-4 py-3 text-sm text-muted-foreground">
+                      {copy.summary.noData}
                     </CardContent>
                   </Card>
-                ))}
+                ) : (
+                  filteredMonthlySummary.map((m) => (
+                    <Card key={m.month}>
+                      <CardContent className="px-4 py-3">
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">{m.month}</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {copy.summary.salesShort} {formatPeso(m.totalSales)} · {copy.summary.expensesLong} {formatPeso(m.totalExpenses)}
+                              {m.daysWithData > 0 && ` · ${interpolate(copy.summary.daysActive, { count: m.daysWithData })}`}
+                            </p>
+                          </div>
+                          <ProfitBadge value={m.profit} />
+                        </div>
+                        {(m.totalSales > 0 || m.totalExpenses > 0) && (
+                          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-green-500"
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  m.totalSales > 0
+                                    ? ((m.totalSales - m.totalExpenses) / m.totalSales) * 100
+                                    : 0
+                                )}%`,
+                              }}
+                            />
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
               </div>
             )}
           </div>
