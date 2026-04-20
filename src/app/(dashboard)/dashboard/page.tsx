@@ -82,78 +82,71 @@ export default function DashboardPage() {
         />
       </div>
 
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-foreground">
-              {copy.dashboard.quickGuideTitle}
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">{copy.dashboard.quickGuideSubtitle}</p>
-          </CardHeader>
-          <CardContent>
-            <ol className="space-y-2">
-              {copy.dashboard.quickGuideSteps.map((step, index) => (
-                <li key={step} className="flex items-start gap-3">
-                  <span className="mt-0.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-green-100 px-1 text-xs font-semibold text-green-800 dark:bg-green-900/40 dark:text-green-300">
+      {/* Quick Guide Banner */}
+      <Card className="border-l-4 border-l-green-500 bg-green-50/60 dark:bg-green-950/20 dark:border-l-green-400">
+        <CardContent className="space-y-4 py-4">
+          <div className="space-y-2">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-green-800 dark:text-green-200">
+                  {copy.dashboard.quickGuideTitle}
+                </h3>
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  {copy.dashboard.quickGuideSubtitle}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            {copy.dashboard.quickGuideSteps.map((step, index) => (
+              <div key={step} className="rounded-2xl border border-green-100 bg-white/80 p-3 shadow-sm transition-colors duration-200 hover:border-green-200 dark:border-green-900/40 dark:bg-zinc-950/70">
+                <div className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-green-100 text-[11px] font-semibold text-green-900 dark:bg-green-900/60 dark:text-green-200">
                     {index + 1}
                   </span>
-                  <span className="text-sm leading-relaxed text-foreground">{step}</span>
-                </li>
-              ))}
-            </ol>
+                  <p className="text-sm leading-6 text-foreground">
+                    {step}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Forms Section */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card className="border-amber-100 dark:border-amber-900/30">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-foreground">
+              {copy.dashboard.addExpenseCard}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AddExpenseForm
+              expenses={expenses}
+              onSuccess={fetchData}
+              selectedDate={selectedDate}
+            />
           </CardContent>
         </Card>
 
-        <div className="space-y-4 lg:col-span-2">
-          <Card className="border-amber-100 dark:border-amber-900/30">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold text-foreground">
-                {copy.dashboard.addExpenseCard}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AddExpenseForm
-                expenses={expenses}
-                onSuccess={fetchData}
-                selectedDate={selectedDate}
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="border-green-100 dark:border-green-900/40">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold text-foreground">
-                {copy.dashboard.logSaleCard}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LogSalesForm
-                sales={sales}
-                onSuccess={fetchData}
-                selectedDate={selectedDate}
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Summary cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <ProfitCard profit={profit} />
-        <SalesSummaryCard sales={sales} totalSales={totalSales} />
-        <ExpenseSummaryCard expenses={expenses} totalExpenses={totalExpenses} />
-        <div className="flex items-center justify-center rounded-xl border border-border bg-card p-6">
-          <div className="text-center">
-            <p className="text-sm font-medium text-muted-foreground">{copy.dashboard.entriesOnSelectedDay}</p>
-            <p className="mt-1 text-3xl font-bold text-foreground">
-              {sales.length + expenses.length}
-            </p>
-          </div>
-        </div>
+        <Card className="border-green-100 dark:border-green-900/40">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold text-foreground">
+              {copy.dashboard.logSaleCard}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LogSalesForm
+              sales={sales}
+              onSuccess={fetchData}
+              selectedDate={selectedDate}
+            />
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Smart summary */}
-      <SmartSummaryCard selectedDate={selectedDate} />
 
       {/* Active bulk purchases section */}
       {activeBulkExpenses.length > 0 && (
@@ -209,8 +202,11 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {/* Weekly chart */}
-      <WeeklyChart data={chartData} selectedDate={selectedDate} />
+      {/* Bottom Section: Smart Summary and Chart */}
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <SmartSummaryCard selectedDate={selectedDate} />
+        <WeeklyChart data={chartData} selectedDate={selectedDate} />
+      </div>
     </div>
   );
 }
