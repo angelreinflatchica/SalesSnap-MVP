@@ -8,6 +8,8 @@ import {
   computeSpreadEndDate,
 } from "@/lib/spreadExpense";
 
+export const dynamic = 'force-dynamic';
+
 const expenseSchema = z.object({
   label: z.string().min(1, "Label is required").max(50),
   amount: z.coerce.number().positive("Amount must be greater than 0"),

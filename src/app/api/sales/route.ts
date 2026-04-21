@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
 
+export const dynamic = 'force-dynamic';
+
 const salesSchema = z.object({
   amount: z.coerce.number().positive("Amount must be greater than 0"),
   note: z.string().optional(),
