@@ -5,6 +5,8 @@ import { generateSmartSummary } from "@/lib/smartSummary";
 import { endOfDay, format, parseISO, startOfDay, subDays } from "date-fns";
 import { getDailySummary, upsertDailySummary } from "@/lib/dailySummaryStore";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {

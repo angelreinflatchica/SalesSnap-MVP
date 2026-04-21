@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { compare, hash } from "bcryptjs";
 
+export const dynamic = 'force-dynamic';
+
 const settingsSchema = z
   .object({
     businessName: z.string().max(100).optional(),
