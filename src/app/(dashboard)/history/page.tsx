@@ -71,20 +71,31 @@ export default function HistoryPage() {
         summaryMap.set(row.date, { summary: row.summary, provider: row.provider });
       });
 
+      // Collect all fetch promises
+      const fetchPromises: Promise<{ dateStr: string; salesData: { sales?: SalesEntry[] }; expensesData: { expenses?: Expense[] } }>[] = [];
       for (let i = 0; i < days; i++) {
         const d = new Date();
         d.setDate(d.getDate() - i);
         const dateStr = format(d, "yyyy-MM-dd");
 
-        const [salesRes, expensesRes] = await Promise.all([
+        const promise = Promise.all([
           fetch(`/api/sales?date=${dateStr}`),
           fetch(`/api/expenses?date=${dateStr}`),
-        ]);
-        const [salesData, expensesData] = await Promise.all([
-          safeJson<{ sales?: SalesEntry[] }>(salesRes, {}),
-          safeJson<{ expenses?: Expense[] }>(expensesRes, {}),
-        ]);
+        ]).then(async ([salesRes, expensesRes]) => {
+          const [salesData, expensesData] = await Promise.all([
+            safeJson<{ sales?: SalesEntry[] }>(salesRes, {}),
+            safeJson<{ expenses?: Expense[] }>(expensesRes, {}),
+          ]);
+          return { dateStr, salesData, expensesData };
+        });
+        fetchPromises.push(promise);
+      }
 
+      // Await all fetches in parallel
+      const allData = await Promise.all(fetchPromises);
+
+      // Process the results
+      for (const { dateStr, salesData, expensesData } of allData) {
         const sales: SalesEntry[] = salesData.sales ?? [];
         const expenses: Expense[] = expensesData.expenses ?? [];
 
