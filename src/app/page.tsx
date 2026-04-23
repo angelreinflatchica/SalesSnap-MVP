@@ -341,6 +341,24 @@ export default function LandingPage() {
           </div>
         </section>
 
+        <section className="w-full px-6 pb-16 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {content.metrics.map((metric) => (
+                <div
+                  key={metric.label}
+                  className="rounded-2xl border border-white/40 bg-white/80 p-4 text-left shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/60"
+                >
+                  <p className="text-3xl font-bold text-green-900 dark:text-green-200">{metric.value}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-zinc-400">
+                    {metric.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="w-full px-6 py-16 sm:px-8 sm:py-24 lg:px-12">
           <div className="mx-auto max-w-6xl">
             <div className="relative">
@@ -382,24 +400,6 @@ export default function LandingPage() {
                   <p className="mt-2 text-xs text-gray-500 dark:text-zinc-400">{content.features[2].body}</p>
                 </div>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full px-6 pb-16 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {content.metrics.map((metric) => (
-                <div
-                  key={metric.label}
-                  className="rounded-2xl border border-white/40 bg-white/80 p-4 text-left shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/60"
-                >
-                  <p className="text-3xl font-bold text-green-900 dark:text-green-200">{metric.value}</p>
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-zinc-400">
-                    {metric.label}
-                  </p>
-                </div>
-              ))}
             </div>
           </div>
         </section>
