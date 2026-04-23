@@ -335,35 +335,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="w-full px-6 pb-16 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-6xl">
-            <div className="rounded-3xl border border-green-100/70 bg-white/80 px-6 py-10 shadow-xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/70 sm:px-10">
-              <div className="text-center">
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-green-600 dark:text-green-400">SalesSnap</p>
-                <h2 className="mt-2 text-3xl font-bold text-green-900 dark:text-green-200">{content.featuresHeading}</h2>
-                <p className="mt-3 text-base text-gray-600 dark:text-zinc-300">{content.featuresDescription}</p>
-              </div>
-              <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {content.features.map((feature, index) => {
-                  const FeatureIcon = featureIcons[index % featureIcons.length];
-                  return (
-                    <div
-                      key={feature.title}
-                      className="group rounded-2xl border border-transparent bg-gradient-to-br from-emerald-50/80 via-white to-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-emerald-200/60 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 dark:hover:border-emerald-500/30"
-                    >
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-green-700 transition group-hover:bg-green-600 group-hover:text-white dark:bg-green-900/40 dark:text-green-300 dark:group-hover:bg-green-800">
-                        {FeatureIcon ? <FeatureIcon className="h-5 w-5" /> : null}
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-zinc-100">{feature.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-gray-500 dark:text-zinc-400">{feature.body}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section className="w-full px-6 pb-20 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-6xl">
             <div className="relative overflow-hidden rounded-3xl border border-green-100/80 bg-gradient-to-br from-white via-emerald-50 to-green-100/60 px-6 py-12 shadow-xl dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.15),_rgba(15,23,42,0.9))] dark:from-zinc-950 dark:via-zinc-900 dark:to-emerald-900/20 sm:px-10">
@@ -418,6 +389,35 @@ export default function LandingPage() {
                   {content.guideCta}
                 </Link>
                 <p className="text-sm text-gray-600 dark:text-zinc-400">{content.guideCtaSubtext}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full px-6 pb-16 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-6xl">
+            <div className="rounded-3xl border border-green-100/70 bg-white/80 px-6 py-10 shadow-xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/70 sm:px-10">
+              <div className="text-center">
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-green-600 dark:text-green-400">SalesSnap</p>
+                <h2 className="mt-2 text-3xl font-bold text-green-900 dark:text-green-200">{content.featuresHeading}</h2>
+                <p className="mt-3 text-base text-gray-600 dark:text-zinc-300">{content.featuresDescription}</p>
+              </div>
+              <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {content.features.map((feature, index) => {
+                  const FeatureIcon = featureIcons[index % featureIcons.length];
+                  return (
+                    <div
+                      key={feature.title}
+                      className="group rounded-2xl border border-transparent bg-gradient-to-br from-emerald-50/80 via-white to-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-emerald-200 hover:shadow-emerald-200/60 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-900 dark:hover:border-emerald-500/30"
+                    >
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-green-700 transition group-hover:bg-green-600 group-hover:text-white dark:bg-green-900/40 dark:text-green-300 dark:group-hover:bg-green-800">
+                        {FeatureIcon ? <FeatureIcon className="h-5 w-5" /> : null}
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-zinc-100">{feature.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-gray-500 dark:text-zinc-400">{feature.body}</p>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
