@@ -37,7 +37,7 @@ const copy = {
     metrics: [
       { value: "5K+", label: "Entries logged" },
       { value: "2 min", label: "Average setup time" },
-      { value: "₱0", label: "Free forever" },
+      { value: "₱0", label: "Start your free trial." },
     ],
     featuresHeading: "Designed for your daily rhythm",
     featuresDescription:
