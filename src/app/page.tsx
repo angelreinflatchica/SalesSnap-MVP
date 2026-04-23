@@ -240,7 +240,7 @@ export default function LandingPage() {
 
       <main className="relative z-10">
         <section className="w-full px-6 py-16 sm:px-8 sm:py-24 lg:px-12">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr,0.95fr]">
+          <div className="mx-auto max-w-6xl">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-green-200/70 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-green-700 shadow-sm dark:border-green-500/40 dark:bg-zinc-900/70 dark:text-green-300">
                 SalesSnap
@@ -277,46 +277,6 @@ export default function LandingPage() {
                   {content.signIn}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-              </div>
-            </div>
-            <div className="relative">
-              <div
-                className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-200/50 to-transparent blur-3xl dark:from-emerald-500/20"
-                aria-hidden="true"
-              />
-              <div className="relative rounded-3xl border border-white/40 bg-white/80 p-6 shadow-2xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-zinc-400">
-                      {content.features[2].title}
-                    </p>
-                    <p className="mt-2 text-4xl font-bold text-green-700 dark:text-green-300">₱6,230</p>
-                  </div>
-                  <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-900/40 dark:text-green-300">
-                    +18%
-                  </span>
-                </div>
-                <div className="mt-6 space-y-4">
-                  {previewData.map((item) => (
-                    <div
-                      key={item.title}
-                      className="rounded-2xl border border-green-100/70 bg-white/80 px-4 py-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/70"
-                    >
-                      <div className="flex items-center justify-between text-sm font-semibold text-gray-600 dark:text-zinc-300">
-                        <span>{item.title}</span>
-                        <span className="text-base text-gray-900 dark:text-zinc-100">{item.amount}</span>
-                      </div>
-                      <p className="mt-2 text-xs leading-snug text-gray-500 dark:text-zinc-400">{item.body}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-8">
-                  <p className="text-sm font-semibold text-gray-900 dark:text-zinc-100">{content.features[2].title}</p>
-                  <div className="mt-3 h-2 rounded-full bg-gray-100 dark:bg-zinc-800">
-                    <div className="h-full w-5/6 rounded-full bg-gradient-to-r from-emerald-500 to-green-600" />
-                  </div>
-                  <p className="mt-2 text-xs text-gray-500 dark:text-zinc-400">{content.features[2].body}</p>
-                </div>
               </div>
             </div>
           </div>
@@ -376,6 +336,51 @@ export default function LandingPage() {
                   {content.guideCta}
                 </Link>
                 <p className="text-sm text-gray-600 dark:text-zinc-400">{content.guideCtaSubtext}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full px-6 py-16 sm:px-8 sm:py-24 lg:px-12">
+          <div className="mx-auto max-w-6xl">
+            <div className="relative">
+              <div
+                className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-200/50 to-transparent blur-3xl dark:from-emerald-500/20"
+                aria-hidden="true"
+              />
+              <div className="relative rounded-3xl border border-white/40 bg-white/80 p-6 shadow-2xl backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/80">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-zinc-400">
+                      {content.features[2].title}
+                    </p>
+                    <p className="mt-2 text-4xl font-bold text-green-700 dark:text-green-300">₱6,230</p>
+                  </div>
+                  <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700 dark:bg-green-900/40 dark:text-green-300">
+                    +18%
+                  </span>
+                </div>
+                <div className="mt-6 space-y-4">
+                  {previewData.map((item) => (
+                    <div
+                      key={item.title}
+                      className="rounded-2xl border border-green-100/70 bg-white/80 px-4 py-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/70"
+                    >
+                      <div className="flex items-center justify-between text-sm font-semibold text-gray-600 dark:text-zinc-300">
+                        <span>{item.title}</span>
+                        <span className="text-base text-gray-900 dark:text-zinc-100">{item.amount}</span>
+                      </div>
+                      <p className="mt-2 text-xs leading-snug text-gray-500 dark:text-zinc-400">{item.body}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-zinc-100">{content.features[2].title}</p>
+                  <div className="mt-3 h-2 rounded-full bg-gray-100 dark:bg-zinc-800">
+                    <div className="h-full w-5/6 rounded-full bg-gradient-to-r from-emerald-500 to-green-600" />
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500 dark:text-zinc-400">{content.features[2].body}</p>
+                </div>
               </div>
             </div>
           </div>
