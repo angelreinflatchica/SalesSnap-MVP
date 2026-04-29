@@ -239,8 +239,8 @@ export default function LandingPage() {
       </nav>
 
       <main className="relative z-10">
-        <section className="w-full px-6 py-16 sm:px-8 sm:py-24 lg:px-12">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-[1.05fr,0.95fr]">
+        <section className="w-full px-6 py-16 sm:px-8 sm:py-20 lg:px-12">
+          <div className="mx-auto max-w-6xl">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-green-200/70 bg-white/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-green-700 shadow-sm dark:border-green-500/40 dark:bg-zinc-900/70 dark:text-green-300">
                 SalesSnap
@@ -278,20 +278,89 @@ export default function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
-              <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                {content.metrics.map((metric) => (
-                  <div
-                    key={metric.label}
-                    className="rounded-2xl border border-white/40 bg-white/80 p-4 text-left shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/60"
-                  >
-                    <p className="text-3xl font-bold text-green-900 dark:text-green-200">{metric.value}</p>
-                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-zinc-400">
-                      {metric.label}
-                    </p>
-                  </div>
-                ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full px-6 pb-16 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-6xl">
+            <div className="relative overflow-hidden rounded-3xl border border-green-100/80 bg-gradient-to-br from-white via-emerald-50 to-green-100/60 px-6 py-12 shadow-xl dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.15),_rgba(15,23,42,0.9))] dark:from-zinc-950 dark:via-zinc-900 dark:to-emerald-900/20 sm:px-10">
+              <div className="mx-auto max-w-3xl text-center">
+                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-green-700 dark:text-green-400">{content.getStarted}</p>
+                <h2 className="mt-2 text-3xl font-bold text-green-900 dark:text-green-100">{content.guideHeading}</h2>
+                <p className="mt-3 text-base text-gray-600 dark:text-zinc-300">{content.guideDescription}</p>
+              </div>
+              <div className="mt-12 relative pl-4 sm:pl-10">
+                <div
+                  className="pointer-events-none absolute left-6 top-0 hidden h-full w-px bg-gradient-to-b from-green-200 via-emerald-400 to-green-600 dark:from-emerald-900 dark:via-emerald-600 dark:to-emerald-500 sm:block"
+                  aria-hidden="true"
+                />
+                <div className="space-y-6">
+                  {content.guide.map((step, index) => {
+                    const Icon = guideIconComponents[step.icon as GuideIconKey];
+                    return (
+                      <div
+                        key={step.title}
+                        className="relative rounded-2xl border border-green-100/70 bg-white/90 px-6 py-5 shadow-sm backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/80 sm:pl-16"
+                      >
+                        <div
+                          className="absolute -left-0 top-6 hidden h-px w-6 bg-gradient-to-r from-green-400 to-green-600 sm:block"
+                          aria-hidden="true"
+                        />
+                        <div className="absolute -left-9 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-base font-bold text-green-700 shadow-lg dark:bg-emerald-950/80 dark:text-green-200 sm:flex">
+                          {index + 1}
+                        </div>
+                        <div className="flex items-start gap-4">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-green-700 dark:bg-emerald-900/40 dark:text-green-300">
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold tracking-[0.3em] text-gray-400 dark:text-zinc-400">
+                              {String(index + 1).padStart(2, "0")}
+                            </p>
+                            <h3 className="mt-1 text-lg font-semibold text-gray-900 dark:text-zinc-100">{step.title}</h3>
+                            <p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-zinc-300">{step.description}</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="mt-10 flex flex-col items-center gap-3 text-center">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-green-700 px-8 py-4 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-emerald-200/70 transition hover:bg-green-800 dark:bg-emerald-500 dark:text-zinc-950"
+                >
+                  <Zap className="h-4 w-4" />
+                  {content.guideCta}
+                </Link>
+                <p className="text-sm text-gray-600 dark:text-zinc-400">{content.guideCtaSubtext}</p>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section className="w-full px-6 pb-8 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              {content.metrics.map((metric) => (
+                <div
+                  key={metric.label}
+                  className="rounded-2xl border border-white/40 bg-white/80 p-4 text-left shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/60"
+                >
+                  <p className="text-3xl font-bold text-green-900 dark:text-green-200">{metric.value}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-gray-500 dark:text-zinc-400">
+                    {metric.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full px-6 py-12 sm:px-8 sm:py-16 lg:px-12">
+          <div className="mx-auto max-w-6xl">
             <div className="relative">
               <div
                 className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-200/50 to-transparent blur-3xl dark:from-emerald-500/20"
@@ -359,65 +428,6 @@ export default function LandingPage() {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full px-6 pb-20 sm:px-8 lg:px-12">
-          <div className="mx-auto max-w-6xl">
-            <div className="relative overflow-hidden rounded-3xl border border-green-100/80 bg-gradient-to-br from-white via-emerald-50 to-green-100/60 px-6 py-12 shadow-xl dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.15),_rgba(15,23,42,0.9))] dark:from-zinc-950 dark:via-zinc-900 dark:to-emerald-900/20 sm:px-10">
-              <div className="mx-auto max-w-3xl text-center">
-                <p className="text-sm font-semibold uppercase tracking-[0.3em] text-green-700 dark:text-green-400">{content.getStarted}</p>
-                <h2 className="mt-2 text-3xl font-bold text-green-900 dark:text-green-100">{content.guideHeading}</h2>
-                <p className="mt-3 text-base text-gray-600 dark:text-zinc-300">{content.guideDescription}</p>
-              </div>
-              <div className="mt-12 relative pl-4 sm:pl-10">
-                <div
-                  className="pointer-events-none absolute left-6 top-0 hidden h-full w-px bg-gradient-to-b from-green-200 via-emerald-400 to-green-600 dark:from-emerald-900 dark:via-emerald-600 dark:to-emerald-500 sm:block"
-                  aria-hidden="true"
-                />
-                <div className="space-y-6">
-                  {content.guide.map((step, index) => {
-                    const Icon = guideIconComponents[step.icon as GuideIconKey];
-                    return (
-                      <div
-                        key={step.title}
-                        className="relative rounded-2xl border border-green-100/70 bg-white/90 px-6 py-5 shadow-sm backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/80 sm:pl-16"
-                      >
-                        <div
-                          className="absolute -left-0 top-6 hidden h-px w-6 bg-gradient-to-r from-green-400 to-green-600 sm:block"
-                          aria-hidden="true"
-                        />
-                        <div className="absolute -left-9 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white text-base font-bold text-green-700 shadow-lg dark:bg-emerald-950/80 dark:text-green-200 sm:flex">
-                          {index + 1}
-                        </div>
-                        <div className="flex items-start gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-green-700 dark:bg-emerald-900/40 dark:text-green-300">
-                            <Icon className="h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="text-xs font-semibold tracking-[0.3em] text-gray-400 dark:text-zinc-400">
-                              {String(index + 1).padStart(2, "0")}
-                            </p>
-                            <h3 className="mt-1 text-lg font-semibold text-gray-900 dark:text-zinc-100">{step.title}</h3>
-                            <p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-zinc-300">{step.description}</p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="mt-10 flex flex-col items-center gap-3 text-center">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-green-700 px-8 py-4 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-emerald-200/70 transition hover:bg-green-800 dark:bg-emerald-500 dark:text-zinc-950"
-                >
-                  <Zap className="h-4 w-4" />
-                  {content.guideCta}
-                </Link>
-                <p className="text-sm text-gray-600 dark:text-zinc-400">{content.guideCtaSubtext}</p>
               </div>
             </div>
           </div>
