@@ -11,7 +11,6 @@ import { TrendingUp, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { isValidPhilippineMobile } from "@/lib/mobileNumber";
 
 const loginSchema = z.object({
@@ -66,14 +65,8 @@ export default function LoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-gradient-to-br from-green-50 via-white to-green-50 px-4 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950">
-      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
-        <ThemeToggle />
-      </div>
       <div className="w-full max-w-sm space-y-6">
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 shadow-lg">
-            <TrendingUp className="h-6 w-6 text-white" />
-          </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">Welcome back</h1>
           <p className="text-sm text-gray-500 dark:text-zinc-400">Sign in to SalesSnap</p>
         </div>
