@@ -71,9 +71,6 @@ export default function LoginPage() {
       </div>
       <div className="w-full max-w-sm space-y-6">
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 shadow-lg">
-            <TrendingUp className="h-6 w-6 text-white" />
-          </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-zinc-100">Welcome back</h1>
           <p className="text-sm text-gray-500 dark:text-zinc-400">Sign in to SalesSnap</p>
         </div>
