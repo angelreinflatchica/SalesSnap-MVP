@@ -148,6 +148,12 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <SalesSummaryCard sales={sales} totalSales={totalSales} />
+        <ExpenseSummaryCard expenses={expenses} totalExpenses={totalExpenses} />
+        <ProfitCard profit={profit} />
+      </div>
+
       {/* Active bulk purchases section */}
       {activeBulkExpenses.length > 0 && (
         <Card>
